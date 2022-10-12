@@ -1,0 +1,12 @@
+/.bundle/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+Gemfile.lock
+
+.rspec_status
+
+/.envrc
+
