@@ -1,0 +1,3 @@
+module ProtectRB
+
+end
