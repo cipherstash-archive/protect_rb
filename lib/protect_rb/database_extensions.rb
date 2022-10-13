@@ -1,11 +1,19 @@
 module ProtectRB
   module DatabaseExtensions
     def self.install
+      ProtectRB::Logger.info("Installing database extension.....")
+
       ActiveRecord::Base.connection.execute(install_script)
+
+      ProtectRB::Logger.info("Database extension installed.")
     end
 
     def self.uninstall
+      ProtectRB::Logger.info("Uninstalling database extension.....")
+
       ActiveRecord::Base.connection.execute(uninstall_script)
+
+      ProtectRB::Logger.info("Database extension uninstalled.")
     end
 
     private
