@@ -12,7 +12,7 @@ RSpec.describe "A ProtectRB customer can run migrations to define searchable col
 
   describe "when the custom extensions are installed" do
     before(:each) do
-      ProtectRB::DatabaseExtensions.install
+      ProtectRB::DatabaseExtensions.install rescue nil
     end
 
     after(:each) do

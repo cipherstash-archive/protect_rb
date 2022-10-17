@@ -6,7 +6,7 @@ RSpec.describe ProtectRB::DatabaseExtensions do
 
   describe "Installation" do
     it "should make the ore_64_8_1_v1 extension type available in the database" do
-      ProtectRB::DatabaseExtensions.install
+      ProtectRB::DatabaseExtensions.install rescue nil
 
       ActiveRecord::Base.connection.execute("create table foo ( email_searchable ore_64_8_v1 )")
     end
@@ -14,8 +14,8 @@ RSpec.describe ProtectRB::DatabaseExtensions do
 
   describe "Uninstallation" do
     it "should make the ore_64_8_1_v1 extension type unavailable in the database" do
-      ProtectRB::DatabaseExtensions.install
-      ProtectRB::DatabaseExtensions.uninstall
+      ProtectRB::DatabaseExtensions.install rescue nil
+      ProtectRB::DatabaseExtensions.uninstall rescue nil
 
       expect {
         ActiveRecord::Base.connection.execute("create table foo ( email_searchable ore_64_8_v1 )")
