@@ -36,7 +36,7 @@ module ProtectRB
           return false if !model.respond_to?(:lockbox_attributes)
           return false if !model.lockbox_attributes.kind_of?(Hash)
 
-          lockbox_attributes[attribute] ? true : false
+          lockbox_attributes.has_key?(attribute)
         end
 
         def ore_64_8_v1?(column_name)
@@ -44,7 +44,7 @@ module ProtectRB
         end
 
         def duplicate_secure_search_attribute?(attrs, attribute)
-          attrs[attribute] ? true : false
+          attrs.has_key?(attribute)
         end
       end
     end
