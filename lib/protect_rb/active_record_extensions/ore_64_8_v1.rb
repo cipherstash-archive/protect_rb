@@ -53,13 +53,20 @@ module ProtectRB
       private
 
       def self.ore
-        # Get something working
         cs_protect_key = ENV["CS_PROTECT_KEY"]
-        prf_key, prp_key = cs_protect_key.split(".")
+        prf_key, prp_key = get_keys(cs_protect_key)
 
         @ore ||= begin
           ORE::AES128.new([prf_key].pack("H*"), [prp_key].pack("H*"), 64, 8)
         end
+      end
+
+      def self.get_keys(protect_key)
+        if protect_key.nil? || protect_key[/\H/] || protect_key.length != 64
+          raise ProtectRB::Error, "Invalid CS_PROTECT_KEY"
+        end
+
+        protect_key.chars.each_slice(32).map(&:join)
       end
     end
   end
