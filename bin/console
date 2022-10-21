@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+
+ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
+ENV["CS_PROTECT_KEY"] = ProtectRB.generate_key
+
+require "bundler/setup"
+require "active_record"
+require "protect_rb"
+require "lockbox"
+
+
+ActiveRecord::Base.establish_connection(
+  adapter: 'postgresql',
+  host: 'localhost',
+  username: ENV["PGUSER"] || nil,
+  password: ENV["PGPASSWORD"] || nil,
+  database: ENV["PGDATABASE"] || 'protect_rb_test'
+)
+
+require './spec/support/models/crud_testing'
+include ProtectRB::ActiveRecordExtensions
+
+# You can add fixtures and/or initialization code here to make experimenting
+# with your gem easier. You can also use a different console, if you like.
+
+# (If you use this, don't forget to add pry to your Gemfile!)
+require "pry"
+# Pry.start
+
+require "irb"
+IRB.start(__FILE__)
