@@ -84,4 +84,27 @@ RSpec.describe "ProtectRB master key" do
       end
     end
   end
+
+  describe "Lockbox master key" do
+    context "Nil value" do
+      before(:each) do
+        ENV['LOCKBOX_MASTER_KEY'] = nil
+      end
+
+      after(:each) do
+          ENV['LOCKBOX_MASTER_KEY'] = Lockbox.generate_key
+      end
+
+      it "raises an error" do
+        expect{CrudTesting.create!(
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2022,10,14),
+          age: 84,
+          verified: true,
+          latitude: 150.634496,
+          email: "steve.zissou@belafonte.com"
+        )}.to raise_error(ArgumentError, "Missing master key")
+      end
+    end
+  end
 end
