@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TYPE ore_64_8_v1 AS (
   bytes bytea
 );
