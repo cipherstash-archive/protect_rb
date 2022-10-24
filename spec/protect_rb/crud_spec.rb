@@ -1,7 +1,7 @@
 RSpec.describe ProtectRB::Model::CRUD do
 
   describe "Create" do
-    it "creates a user with ore and lockbox encrypted values" do
+    it "creates a single record with ore and lockbox encrypted values" do
       user = CrudTesting.create!(
         dob: Date.new(1950,9,21),
         last_login: DateTime.new(2022,10,14),
@@ -24,7 +24,36 @@ RSpec.describe ProtectRB::Model::CRUD do
   end
 
   describe "Update" do
-    it "updates the ore and lockbox encrypted values" do
+    before(:each) do
+      CrudTesting.create!(
+        dob: Date.new(1970,6,26),
+        last_login: DateTime.new(2022,10,9),
+        age: 52,
+        verified: false,
+        latitude: 150.634496,
+        email: "pt.anderson@magnolia.com"
+      )
+
+      CrudTesting.create!(
+        dob: Date.new(1954,8,16),
+        last_login: DateTime.new(2022,10,9),
+        age: 68,
+        verified: false,
+        latitude: 150.634496,
+        email: "j.cameron@avatar.com"
+      )
+
+      CrudTesting.create!(
+        dob: Date.new(1983,8,4),
+        last_login: DateTime.new(2022,10,9),
+        age: 39,
+        verified: false,
+        latitude: 150.634496,
+        email: "frances.ha@gerwig.com"
+      )
+    end
+
+    it "updates the ore and lockbox encrypted values in a single record" do
        user_one = CrudTesting.create!(
         dob: Date.new(1969,5,1),
         last_login: DateTime.new(2022,10,14),
@@ -32,15 +61,6 @@ RSpec.describe ProtectRB::Model::CRUD do
         verified: true,
         latitude: 150.634496,
         email: "wes.anderson@rushmore.com"
-      )
-
-      CrudTesting.create!(
-        dob: Date.new(1970,6,26),
-        last_login: DateTime.new(2022,10,9),
-        age: 52,
-        verified: true,
-        latitude: 150.634496,
-        email: "pt.anderson@magnolia.com"
       )
 
       CrudTesting.update(user_one.id, verified: false, email: "wes@anderson.com")
@@ -62,6 +82,34 @@ RSpec.describe ProtectRB::Model::CRUD do
       expect(updated_user.first.dob).to eq(user_one.dob)
       expect(updated_user.first.age).to eq(user_one.age)
       expect(updated_user.first.latitude).to eq(user_one.latitude)
+    end
+
+    it "updates the ore and lockbox encrypted values in multiple records" do
+      existing_users = CrudTesting.where(
+        last_login_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(DateTime.new(2022,10,9))
+      )
+
+      expect(existing_users.length).to eq(3)
+
+      existing_users.each do |user|
+        expect(user.verified).to eq(false)
+      end
+
+      # This does not trigger any callbacks, so the virtual attribute isn't created.
+      # We get a postgres undefined column error for verified.
+
+      # existing_users.update_all(verified:true)
+
+      existing_users.update(verified: true)
+
+      updated_users = CrudTesting.where(
+        last_login_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(DateTime.new(2022,10,9))
+      )
+
+      expect(updated_users.length).to eq(3)
+      updated_users.each do |user|
+        expect(user.verified).to eq(true)
+      end
     end
   end
 
