@@ -9,6 +9,11 @@ module ProtectRB
         super
       end
 
+      def _update_record(*)
+        protect_rb_sync
+        super
+      end
+
       def protect_rb_sync
         search_attrs = self.class.instance_variable_get("@protect_rb_search_attrs")
 
