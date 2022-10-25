@@ -1,13 +1,12 @@
 #!/usr/bin/env ruby
 
-ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
-ENV["CS_PROTECT_KEY"] = ProtectRB.generate_key
-
 require "bundler/setup"
 require "active_record"
 require "protect_rb"
 require "lockbox"
 
+ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
+ENV["CS_PROTECT_KEY"] = ProtectRB.generate_key
 
 ActiveRecord::Base.establish_connection(
   adapter: 'postgresql',
