@@ -1,24 +1,50 @@
 RSpec.describe ProtectRB::Model::CRUD do
+  # TODO Split out crud specs to different files
   describe "Create" do
-    it "create! a single record with ore and lockbox encrypted values" do
-      user = CrudTesting.create!(
-        dob: Date.new(1950,9,21),
-        last_login: DateTime.new(2022,10,14),
-        age: 84,
-        verified: true,
-        latitude: 150.634496,
-        email: "steve.zissou@belafonte.com"
-      )
+    context "create" do
+      it "a single record with ore and lockbox encrypted values using create" do
+        user = CrudTesting.create(
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2022,10,14),
+          age: 84,
+          verified: true,
+          latitude: 150.634496,
+          email: "steve.zissou@belafonte.com"
+        )
 
-      expect(user.age_secure_search).to_not be(nil)
-      expect(user.age_secure_search.class).to eq(ProtectRB::ActiveRecordExtensions::ORE_64_8_V1)
-      expect(user.age_secure_search.ciphertext).to_not be(nil)
+        expect(user.age_secure_search).to_not be(nil)
+        expect(user.age_secure_search.class).to eq(ProtectRB::ActiveRecordExtensions::ORE_64_8_V1)
+        expect(user.age_secure_search.ciphertext).to_not be(nil)
 
-      expect(user.age_ciphertext).to_not be(nil)
+        expect(user.age_ciphertext).to_not be(nil)
 
-      returned_user = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(84))
+        returned_user = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(84))
 
-      expect(returned_user.first.id).to eq(user.id)
+        expect(returned_user.first.id).to eq(user.id)
+      end
+    end
+
+    context "create!" do
+      it "a single record with ore and lockbox encrypted values using create!" do
+        user = CrudTesting.create!(
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2022,10,14),
+          age: 84,
+          verified: true,
+          latitude: 150.634496,
+          email: "steve.zissou@belafonte.com"
+        )
+
+        expect(user.age_secure_search).to_not be(nil)
+        expect(user.age_secure_search.class).to eq(ProtectRB::ActiveRecordExtensions::ORE_64_8_V1)
+        expect(user.age_secure_search.ciphertext).to_not be(nil)
+
+        expect(user.age_ciphertext).to_not be(nil)
+
+        returned_user = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(84))
+
+        expect(returned_user.first.id).to eq(user.id)
+      end
     end
   end
 
@@ -119,7 +145,7 @@ RSpec.describe ProtectRB::Model::CRUD do
     end
 
     context "update_all" do
-      skip "updates the ore and lockbox encrypted values in multiple records" do
+      it "updates the ore and lockbox encrypted values in multiple records" do
         # This does not trigger any callbacks, so the virtual attribute isn't created.
         # We get a postgres undefined column error for verified.
         CrudTesting.update_all(verified:true)
@@ -131,7 +157,7 @@ RSpec.describe ProtectRB::Model::CRUD do
         end
       end
 
-      skip "updates the ore and lockbox encrypted values in multiple records with a where clause" do
+      it "updates the ore and lockbox encrypted values in multiple records with a where clause", :skip => "update_all not implemented yet" do
         existing_users = CrudTesting.where(
           last_login_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(DateTime.new(2022,10,9))
         )
@@ -144,7 +170,6 @@ RSpec.describe ProtectRB::Model::CRUD do
 
         # This does not trigger any callbacks, so the virtual attribute isn't created.
         # We get a postgres undefined column error for verified.
-
         existing_users.update_all(verified:true)
 
         updated_users = CrudTesting.where(
@@ -159,7 +184,7 @@ RSpec.describe ProtectRB::Model::CRUD do
     end
 
     context "upsert" do
-      skip "updates a single record with ore and lockbox encrypted values" do
+      it "updates a single record with ore and lockbox encrypted values", :skip => "Upsert not implemented yet" do
         existing_user = CrudTesting.where(email_secure_search:  ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("frances.ha@gerwig.com"))
         expect(existing_user.length).to eq(1)
 
@@ -187,7 +212,7 @@ RSpec.describe ProtectRB::Model::CRUD do
         expect(updated_user.email).to eq("greta.gerwig@test.com")
       end
 
-      skip "creates a single record with ore and lockbox encrypted values" do
+      it "creates a single record with ore and lockbox encrypted values", :skip => "Upsert not implemented yet" do
          CrudTesting.upsert({
           dob: Date.new(1969,3,9),
           last_login: DateTime.new(2022,10,9),
@@ -201,6 +226,7 @@ RSpec.describe ProtectRB::Model::CRUD do
           email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("noah.baumbach@whale.com")
         )
 
+        # Why is it returning a user when searching on a field that is nil
         expect(created_user.length).to eq(1)
         expect(created_user.first.age).to eq(53)
 
@@ -209,14 +235,40 @@ RSpec.describe ProtectRB::Model::CRUD do
     end
 
     context "upsert_all" do
-      it "updates or inserts multiple records with ore and lockbox encrypted values" do
+      it "updates multiple records with ore and lockbox encrypted values" do
+        existing_user = CrudTesting.where(email_secure_search:  ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("frances.ha@gerwig.com"))
+        expect(existing_user.length).to eq(1)
 
+        CrudTesting.upsert_all([{
+          id: existing_user.first.id,
+          dob: Date.new(1983,8,4),
+          last_login: DateTime.new(2022,10,9),
+          age: 39,
+          verified: false,
+          latitude: 10.000,
+          email: "greta.gerwig@test.com"
+        }])
+
+        # Assert Lockbox values are updated
+        updated_user_by_id = CrudTesting.find_by(id: existing_user.first.id)
+        expect(updated_user_by_id.latitude).to eq(10.000)
+        expect(updated_user_by_id.email).to eq("greta.gerwig@test.com")
+
+        # Find by secure search to assert protect rb fields have been updated.
+        updated_user = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("greta.gerwig@test.com"))
+
+        expect(updated_user.length).to eq(1)
+        expect(updated_user.first.latitude).to eq(10.000)
+        expect(updated_user.email).to eq("greta.gerwig@test.com")
+      end
+
+      it "creates multiples records with ore and lockbox encrypted values" do
       end
     end
   end
 
   describe "Read" do
-    before(:all) do
+    before(:each) do
        CrudTesting.create!(
         dob: Date.new(1950,9,21),
         last_login: DateTime.new(2020,9,14),
@@ -254,49 +306,74 @@ RSpec.describe ProtectRB::Model::CRUD do
       )
     end
 
-    it "returns records using equality on an integer type" do
-      user_via_integer = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72))
+    context "equality" do
+      it "returns records on an integer type" do
+        user_via_integer = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72))
 
-      expect(user_via_integer.length).to eq(1)
-      expect(user_via_integer.first.age).to eq(72)
+        expect(user_via_integer.length).to eq(1)
+        expect(user_via_integer.first.age).to eq(72)
+      end
 
+      it "returns records on a boolean type" do
+        user_via_boolean = CrudTesting.where(
+          verified_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(true)
+        )
+
+        expect(user_via_boolean.length).to eq(2)
+        expect(user_via_boolean.first.verified).to eq(true)
+        expect(user_via_boolean.second.verified).to eq(true)
+      end
+
+      it "returns records on a date type" do
+        user_via_date = CrudTesting.where(
+          dob_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(Date.new(1967,9,27))
+        )
+
+        expect(user_via_date.length).to eq(1)
+        expect(user_via_date.first.dob).to eq(Date.new(1967,9,27))
+      end
+
+      it "returns records on a date time type" do
+        user_via_datetime = CrudTesting.where(
+          last_login_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(DateTime.new(2022,8,7))
+        )
+
+        expect(user_via_datetime.length).to eq(1)
+        expect(user_via_datetime.first.last_login).to eq(DateTime.new(2022,8,7))
+      end
+
+      it "returns records on a float type" do
+        user_via_float = CrudTesting.where(
+          latitude_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(109.634496)
+        )
+
+        expect(user_via_float.length).to eq(1)
+        expect(user_via_float.first.latitude).to eq(109.634496)
+      end
+
+      it "returns records on a string type" do
+        user_via_string = CrudTesting.where(
+          email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("etheline@tenenbaum.com")
+        )
+
+        expect(user_via_string.length).to eq(1)
+        expect(user_via_string.first.email).to eq("etheline@tenenbaum.com")
+      end
     end
 
-    it "returns records using equality on a boolean type" do
-      user_via_boolean = CrudTesting.where(verified_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(true))
+    context "range" do
+      # Flakey
+      it "returns records using gt on an integer type", :skip => "Flakey: Inconsistent results" do
+        user_via_integer = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72)..)
 
-      expect(user_via_boolean.length).to eq(2)
-      expect(user_via_boolean.first.verified).to eq(true)
-      expect(user_via_boolean.second.verified).to eq(true)
-    end
+        expect(user_via_integer.length).to eq(1)
+      end
 
-    it "returns records using equality on a date type" do
-      user_via_date = CrudTesting.where(dob_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(Date.new(1967,9,27)))
+      it "returns records using lt on an integer type", :skip => "Flakey: Inconsistent results" do
+        user_via_integer = CrudTesting.where(age_secure_search: ..ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72))
 
-      expect(user_via_date.length).to eq(1)
-      expect(user_via_date.first.dob).to eq(Date.new(1967,9,27))
-    end
-
-    it "returns records using equality on a date time type" do
-      user_via_datetime = CrudTesting.where(last_login_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(DateTime.new(2022,8,7)))
-
-      expect(user_via_datetime.length).to eq(1)
-      expect(user_via_datetime.first.last_login).to eq(DateTime.new(2022,8,7))
-    end
-
-    it "returns records using equality on a float type" do
-      user_via_float = CrudTesting.where(latitude_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(109.634496))
-
-      expect(user_via_float.length).to eq(1)
-      expect(user_via_float.first.latitude).to eq(109.634496)
-    end
-
-    it "returns records using equality on a string type" do
-      user_via_string = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("etheline@tenenbaum.com"))
-      expect(user_via_string.length).to eq(1)
-      expect(user_via_string.first.email).to eq("etheline@tenenbaum.com")
+        expect(user_via_integer.length).to eq(2)
+      end
     end
   end
-
-  # TODO: Range queries
 end
