@@ -469,20 +469,47 @@ RSpec.describe ProtectRB::Model::CRUD do
         expect(user_via_string.length).to eq(1)
         expect(user_via_string.first.email).to eq("etheline@tenenbaum.com")
       end
+
+      it "should not return a record if querying on a nil secure search field" do
+        user = CrudTesting.create(
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2022,10,14),
+          age: nil,
+          verified: true,
+          latitude: 150.634496,
+          email: "test@email.com"
+        )
+
+        returned_user = CrudTesting.where(
+          age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(70)
+        )
+        expect(returned_user.length).to eq(0)
+      end
     end
 
     context "range" do
-      # Flakey
-      it "returns records using gt on an integer type", :skip => "Flakey: Inconsistent results" do
-        user_via_integer = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72)..)
+      it "returns records using gt on an integer type" do
+        user_via_integer = CrudTesting.where.not(age_secure_search: ..ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72))
 
         expect(user_via_integer.length).to eq(1)
       end
 
-      it "returns records using lt on an integer type", :skip => "Flakey: Inconsistent results" do
-        user_via_integer = CrudTesting.where(age_secure_search: ..ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72))
+      it "returns records using gte on an integer type" do
+        user_via_integer = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72)..)
 
         expect(user_via_integer.length).to eq(2)
+      end
+
+      it "returns records using lt on an integer type" do
+        user_via_integer = CrudTesting.where(age_secure_search: ...ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72))
+
+        expect(user_via_integer.length).to eq(2)
+      end
+
+      it "returns records using lte on an integer type" do
+        user_via_integer = CrudTesting.where(age_secure_search: ..ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(72))
+
+        expect(user_via_integer.length).to eq(3)
       end
     end
   end
