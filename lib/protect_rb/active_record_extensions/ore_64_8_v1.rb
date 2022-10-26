@@ -17,7 +17,7 @@ module ProtectRB
 
       def deserialize(value)
         if !value.nil?
-          ORE_64_8_V1.new([value[1..-2]].pack("h*").unpack("C*"))
+          ORE_64_8_V1.new([value[1..-2]].pack("H*").unpack("C*"))
         else
           nil
         end
@@ -27,7 +27,7 @@ module ProtectRB
         if !value.nil?
           bytes = value.ciphertext.to_s.bytes
 
-          "(\"\\\\x#{bytes.pack("C*").unpack("h*").first}\")"
+          "(\"\\\\x#{bytes.pack("C*").unpack("H*").first}\")"
         else
           nil
         end
