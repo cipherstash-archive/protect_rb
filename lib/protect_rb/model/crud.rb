@@ -8,22 +8,18 @@ module ProtectRB
       class_methods do
         if ActiveRecord::VERSION::MAJOR >= 6
           def upsert_all(attributes, **options)
-            super(map_attributes(attributes), **options)
+            super(protect_rb_map_attributes(attributes), **options)
           end
 
           def insert_all(attributes, **options)
-            super(map_attributes(attributes), **options)
+            super(protect_rb_map_attributes(attributes), **options)
           end
 
           def insert_all!(attributes, **options)
-            super(map_attributes(attributes), **options)
+            super(protect_rb_map_attributes(attributes), **options)
           end
 
-          def update_all(attributes, **options)
-            binding.pry
-          end
-
-          def map_attributes(records)
+          def protect_rb_map_attributes(records)
             return records unless records.is_a?(Array)
 
             records.map do |attributes|
