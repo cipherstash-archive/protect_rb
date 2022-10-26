@@ -224,8 +224,6 @@ RSpec.describe ProtectRB::Model::CRUD do
 
     context "update_all" do
       it "updates the ore and lockbox encrypted values in multiple records", :skip => "update_all not implemented yet" do
-        # This does not trigger any callbacks, so the virtual attribute isn't created.
-        # We get a postgres undefined column error for verified.
         CrudTesting.update_all(verified:true)
 
         updated_users = CrudTesting.all

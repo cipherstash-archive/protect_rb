@@ -19,6 +19,10 @@ module ProtectRB
             super(map_attributes(attributes), **options)
           end
 
+          def update_all(attributes, **options)
+            binding.pry
+          end
+
           def map_attributes(records)
             return records unless records.is_a?(Array)
 
