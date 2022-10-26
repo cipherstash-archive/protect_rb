@@ -39,7 +39,7 @@ module ProtectRB
 
                   ore_encrypted_value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(decrypted_lockbox_value)
 
-                  secure_search_field = @protect_rb_search_attrs[virtual_attribute][:searchable_attribute]
+                  secure_search_field = @protect_rb_search_attrs[virtual_attribute].fetch(:searchable_attribute)
 
                   attributes[secure_search_field] = ore_encrypted_value
                 end
