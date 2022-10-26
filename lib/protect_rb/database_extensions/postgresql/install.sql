@@ -17,6 +17,18 @@ CREATE OR REPLACE FUNCTION compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1) ret
 
     indicator smallint := 0;
   BEGIN
+    IF a IS NULL AND b IS NULL THEN
+      RETURN 0;
+    END IF;
+
+    IF a IS NULL THEN
+      RETURN -1;
+    END IF;
+
+    IF b IS NULL THEN
+      RETURN 1;
+    END IF;
+
     IF bit_length(a.bytes) != bit_length(b.bytes) THEN
       RAISE EXCEPTION 'Ciphertexts are different lengths';
     END IF;
