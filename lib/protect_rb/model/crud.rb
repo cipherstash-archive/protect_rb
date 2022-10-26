@@ -6,42 +6,40 @@ module ProtectRB
       extend ActiveSupport::Concern
 
       class_methods do
-        if ActiveRecord::VERSION::MAJOR >= 6
-          def upsert_all(attributes, **options)
-            super(protect_rb_map_attributes(attributes), **options)
-          end
+        def upsert_all(attributes, **options)
+          super(protect_rb_map_attributes(attributes), **options)
+        end
 
-          def insert_all(attributes, **options)
-            super(protect_rb_map_attributes(attributes), **options)
-          end
+        def insert_all(attributes, **options)
+          super(protect_rb_map_attributes(attributes), **options)
+        end
 
-          def insert_all!(attributes, **options)
-            super(protect_rb_map_attributes(attributes), **options)
-          end
+        def insert_all!(attributes, **options)
+          super(protect_rb_map_attributes(attributes), **options)
+        end
 
-          def protect_rb_map_attributes(records)
-            return records unless records.is_a?(Array)
+        def protect_rb_map_attributes(records)
+          return records unless records.is_a?(Array)
 
-            records.map do |attributes|
-              lockbox_attributes = self.lockbox_attributes
+          records.map do |attributes|
+            lockbox_attributes = self.lockbox_attributes
 
-              lockbox_attributes.map do | key, hash|
-                virtual_attribute = hash[:attribute].to_sym
-                if @protect_rb_search_attrs[virtual_attribute]
+            lockbox_attributes.map do | key, hash|
+              virtual_attribute = hash[:attribute].to_sym
+              if @protect_rb_search_attrs[virtual_attribute]
 
-                  lockbox_encrypted_attribute = hash[:encrypted_attribute]
+                lockbox_encrypted_attribute = hash[:encrypted_attribute]
 
-                  decrypted_lockbox_value = self.send("decrypt_#{lockbox_encrypted_attribute}", attributes[lockbox_encrypted_attribute])
+                decrypted_lockbox_value = self.send("decrypt_#{lockbox_encrypted_attribute}", attributes[lockbox_encrypted_attribute])
 
-                  ore_encrypted_value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(decrypted_lockbox_value)
+                ore_encrypted_value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(decrypted_lockbox_value)
 
-                  secure_search_field = @protect_rb_search_attrs[virtual_attribute].fetch(:searchable_attribute)
+                secure_search_field = @protect_rb_search_attrs[virtual_attribute].fetch(:searchable_attribute)
 
-                  attributes[secure_search_field] = ore_encrypted_value
-                end
+                attributes[secure_search_field] = ore_encrypted_value
               end
-              attributes
             end
+            attributes
           end
         end
       end

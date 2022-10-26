@@ -1,4 +1,3 @@
-require "base64"
 module ProtectRB
   module ActiveRecordExtensions
     class ORE_64_8_V1_Type < ::ActiveRecord::Type::Value
