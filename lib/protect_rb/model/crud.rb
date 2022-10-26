@@ -35,7 +35,7 @@ module ProtectRB
 
                   lockbox_encrypted_attribute = hash[:encrypted_attribute]
 
-                  decrypted_lockbox_value = self.send("decrypt_#{lockbox_encrypted_attribute}", attributes[hash[:encrypted_attribute]])
+                  decrypted_lockbox_value = self.send("decrypt_#{lockbox_encrypted_attribute}", attributes[lockbox_encrypted_attribute])
 
                   ore_encrypted_value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(decrypted_lockbox_value)
 
