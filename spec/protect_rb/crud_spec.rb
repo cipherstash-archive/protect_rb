@@ -513,4 +513,106 @@ RSpec.describe ProtectRB::Model::CRUD do
       end
     end
   end
+
+  describe "Delete" do
+    context "delete" do
+      it "deletes the record" do
+        user = CrudTesting.create(
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2022,10,14),
+          age: 84,
+          verified: true,
+          latitude: 150.634496,
+          email: "steve.zissou@belafonte.com"
+        )
+
+        returned_user_one = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com"))
+
+        expect(returned_user_one.length).to eq(1)
+        expect(returned_user_one.first.email).to eq("steve.zissou@belafonte.com")
+
+        CrudTesting.delete(user.id)
+
+        returned_user_two = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com"))
+        expect(returned_user_two.length).to eq(0)
+      end
+    end
+
+    context "destroy" do
+       it "deletes the record" do
+        CrudTesting.create(
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2022,10,14),
+          age: 84,
+          verified: true,
+          latitude: 150.634496,
+          email: "steve.zissou@belafonte.com"
+        )
+
+        returned_user_one = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com"))
+
+        expect(returned_user_one.length).to eq(1)
+        expect(returned_user_one.first.email).to eq("steve.zissou@belafonte.com")
+
+        returned_user_one.first.destroy
+
+        returned_user_two = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com"))
+        expect(returned_user_two.length).to eq(0)
+      end
+    end
+
+    context "destroy!" do
+       it "deletes the record" do
+        CrudTesting.create(
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2022,10,14),
+          age: 84,
+          verified: true,
+          latitude: 150.634496,
+          email: "steve.zissou@belafonte.com"
+        )
+
+        returned_user_one = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com"))
+
+        expect(returned_user_one.length).to eq(1)
+        expect(returned_user_one.first.email).to eq("steve.zissou@belafonte.com")
+
+        returned_user_one.first.destroy!
+
+        returned_user_two = CrudTesting.where(email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com"))
+        expect(returned_user_two.length).to eq(0)
+      end
+    end
+  end
+
+  context "destroy_all" do
+    it "deletes the record" do
+      CrudTesting.create(
+        dob: Date.new(1950,9,21),
+        last_login: DateTime.new(2022,10,12),
+        age: 84,
+        verified: true,
+        latitude: 150.634496,
+        email: "steve.zissou@belafonte.com"
+      )
+
+      CrudTesting.create!(
+        dob: Date.new(1947,9,22),
+        last_login: DateTime.new(2022,10,12),
+        age: 75,
+        verified: false,
+        latitude: 113.634496,
+        email: "kingsley.zissou@belafonte.com"
+      )
+
+      returned_users_one = CrudTesting.where(last_login_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(DateTime.new(2022,10,12)))
+
+      expect(returned_users_one.length).to eq(2)
+
+      returned_users_one.destroy_all
+
+      returned_users_two = CrudTesting.where(last_login_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(DateTime.new(2022,10,12)))
+      expect(returned_users_two.length).to eq(0)
+    end
+  end
 end
