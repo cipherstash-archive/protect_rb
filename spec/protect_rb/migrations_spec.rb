@@ -1,4 +1,4 @@
-RSpec.describe "A ProtectRB customer can run migrations to define searchable columns" do
+RSpec.describe "A ProtectRB customer can run migrations to define searchable columns", :type => :extensions_test do
   let(:migration) {
     class AcmeCorpUser < ActiveRecord::Migration[7.0]
       def change
