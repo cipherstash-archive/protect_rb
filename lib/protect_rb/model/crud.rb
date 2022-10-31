@@ -18,6 +18,45 @@ module ProtectRB
           super(protect_rb_map_attributes(attributes), **options)
         end
 
+        # Intercepts the order call to update any virtual attributes to use the
+        # searchable attribute field.
+        # Args are an array of Symbols for default ordering and a Hash for fields noted with a direction.
+        # [:age_plaintext, {:last_login=>:asc, :email=>:asc}]
+        def order(*args)
+          search_attrs = self.instance_variable_get("@protect_rb_search_attrs")
+
+          if search_attrs.nil?
+            return super(args)
+          end
+
+          updated_args =
+            args.map do |arg|
+              case arg
+              when Symbol
+                search_attr = search_attrs[arg]
+                if search_attr
+                  search_attr.fetch(:searchable_attribute)
+                else
+                  arg
+                end
+              when Hash
+                updated_hash = {}
+                  arg.each do |field,direction|
+                  search_attr = search_attrs[field]
+                  if search_attr
+                    updated_hash[search_attr.fetch(:searchable_attribute).to_sym] = direction
+                  else
+                    updated_hash[field] = direction
+                  end
+                end
+                updated_hash
+              else
+                arg
+              end
+            end
+          super(updated_args)
+        end
+
         def protect_rb_map_attributes(records)
           return records unless records.is_a?(Array)
 
