@@ -3,6 +3,7 @@ require 'rspec/expectations'
 require "active_record"
 require "protect_rb"
 require "lockbox"
+require "debug"
 require "pry"
 require "database_cleaner"
 
