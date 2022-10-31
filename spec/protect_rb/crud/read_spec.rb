@@ -198,5 +198,177 @@ RSpec.describe ProtectRB::Model::CRUD do
         end
       end
     end
+
+    describe "range queries" do
+      context "when using an integer type" do
+        it "returns records using gt" do
+          user_via_integer = CrudTesting.where.not(
+            age: ..72
+          )
+
+          expect(user_via_integer.length).to eq(1)
+        end
+
+        it "returns records using gte" do
+          user_via_integer = CrudTesting.where(
+            age: 72..
+          )
+
+          expect(user_via_integer.length).to eq(2)
+        end
+
+        it "returns records using lt" do
+          user_via_integer = CrudTesting.where(
+            age: ...72
+          )
+
+          expect(user_via_integer.length).to eq(2)
+        end
+
+        it "returns records using lte" do
+          user_via_integer = CrudTesting.where(
+            age: ..72
+          )
+
+          expect(user_via_integer.length).to eq(3)
+        end
+      end
+
+      context "when using a date type" do
+        it "returns records using gt" do
+          user_via_date = CrudTesting.where.not(
+            dob: ..Date.new(1950,9,21)
+          )
+
+          expect(user_via_date.length).to eq(2)
+        end
+
+        it "returns records using gte" do
+          user_via_date = CrudTesting.where(
+            dob: Date.new(1950,9,21)..
+          )
+
+          expect(user_via_date.length).to eq(3)
+        end
+
+        it "returns records using lt" do
+          user_via_date = CrudTesting.where(
+            dob: ...Date.new(1950,9,21)
+          )
+
+          expect(user_via_date.length).to eq(1)
+        end
+
+        it "returns records using lte" do
+          user_via_date = CrudTesting.where(
+            dob: ..Date.new(1950,9,21)
+          )
+
+          expect(user_via_date.length).to eq(2)
+        end
+      end
+
+      context "when using a datetime type" do
+        it "returns records using gt" do
+          user_via_datetime = CrudTesting.where.not(
+            last_login: ..DateTime.new(2022,7,1)
+          )
+
+          expect(user_via_datetime.length).to eq(2)
+        end
+
+        it "returns records using gte" do
+          user_via_datetime = CrudTesting.where(
+            last_login: DateTime.new(2022,7,1)..
+          )
+
+          expect(user_via_datetime.length).to eq(3)
+        end
+
+        it "returns records using lt" do
+          user_via_datetime = CrudTesting.where(
+            last_login: ...DateTime.new(2022,7,1)
+          )
+
+          expect(user_via_datetime.length).to eq(1)
+        end
+
+        it "returns records using lte" do
+          user_via_datetime = CrudTesting.where(
+            last_login: ..DateTime.new(2022,7,1)
+          )
+
+          expect(user_via_datetime.length).to eq(2)
+        end
+      end
+
+      context "when using a float type" do
+        it "returns records using gt" do
+          user_via_float = CrudTesting.where.not(
+            latitude: ..109.634496
+          )
+
+          expect(user_via_float.length).to eq(3)
+        end
+
+        it "returns records using gte" do
+          user_via_float = CrudTesting.where(
+            latitude: 109.634496..
+          )
+
+          expect(user_via_float.length).to eq(4)
+        end
+
+        it "returns records using lt" do
+          user_via_float = CrudTesting.where(
+            latitude: ...109.634496
+          )
+
+          expect(user_via_float.length).to eq(0)
+        end
+
+        it "returns records using lte" do
+          user_via_float = CrudTesting.where(
+            latitude: ..109.634496
+          )
+
+          expect(user_via_float.length).to eq(1)
+        end
+      end
+
+      context "when using a boolean type" do
+        it "returns records using gt" do
+          user_via_boolean = CrudTesting.where.not(
+            verified: ..true
+          )
+
+          expect(user_via_boolean.length).to eq(0)
+        end
+
+        it "returns records using gte" do
+          user_via_boolean = CrudTesting.where(
+            verified: true..
+          )
+
+          expect(user_via_boolean.length).to eq(2)
+        end
+
+        it "returns records using lt" do
+          user_via_boolean = CrudTesting.where(
+            verified: ...true
+          )
+
+          expect(user_via_boolean.length).to eq(2)
+        end
+
+        it "returns records using lte" do
+          user_via_boolean = CrudTesting.where(
+            verified: ..true
+          )
+
+          expect(user_via_boolean.length).to eq(4)
+        end
+      end
+    end
   end
 end
