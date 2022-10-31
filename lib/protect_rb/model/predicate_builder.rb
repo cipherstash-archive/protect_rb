@@ -12,7 +12,6 @@ module ProtectRB
           if search_attr
             attribute = attribute.relation[search_attr]
             value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value)
-            end
           end
         end
         super(attribute, value, *args)
