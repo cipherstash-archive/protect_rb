@@ -26,7 +26,7 @@ module ProtectRB
 
             lockbox_attributes.map do | key, hash|
               virtual_attribute = hash[:attribute].to_sym
-              if @protect_rb_search_attrs[virtual_attribute]
+              if protect_rb_search_attrs[virtual_attribute]
 
                 lockbox_encrypted_attribute = hash[:encrypted_attribute]
 
@@ -34,7 +34,7 @@ module ProtectRB
 
                 ore_encrypted_value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(decrypted_lockbox_value)
 
-                secure_search_field = @protect_rb_search_attrs[virtual_attribute].fetch(:searchable_attribute)
+                secure_search_field = protect_rb_search_attrs[virtual_attribute].fetch(:searchable_attribute)
 
                 attributes[secure_search_field] = ore_encrypted_value
               end
@@ -56,7 +56,7 @@ module ProtectRB
 
 
       def protect_rb_sync
-        search_attrs = self.class.instance_variable_get("@protect_rb_search_attrs")
+        search_attrs = self.class.protect_rb_search_attrs
 
         if search_attrs.kind_of?(Hash) && !search_attrs.empty?
           search_attrs.each do |virt_attr, metadata|
