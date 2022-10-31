@@ -11,10 +11,38 @@ module ProtectRB
 
           if search_attr
             attribute = attribute.relation[search_attr]
-            value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value)
+
+            if range_query?(value)
+              value = encrypt_range(value)
+            else
+              value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value)
+            end
           end
         end
         super(attribute, value, *args)
+      end
+
+      private
+      def range_query?(value)
+        value.kind_of?(Range)
+      end
+
+      def encrypt_range(value)
+        if value.to_s.include? "..."
+          if value.begin == nil
+            return value.begin...ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value.end)
+          end
+        end
+
+        if value.to_s.include? ".."
+          if value.begin == nil
+            return Range.new(value.begin, ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value.end))
+          end
+
+          if value.end == nil
+            return Range.new(ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value.begin), value.end)
+          end
+        end
       end
     end
   end
