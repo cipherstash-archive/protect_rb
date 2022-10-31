@@ -161,7 +161,7 @@ CREATE OPERATOR >= (
 );
 
 CREATE OPERATOR FAMILY ore_64_8_v1_btree_ops USING btree;
-CREATE OPERATOR CLASS ore_64_8_v1_btree_ops  FOR TYPE ore_64_8_v1 USING btree FAMILY ore_64_8_v1_btree_ops  AS
+CREATE OPERATOR CLASS ore_64_8_v1_btree_ops DEFAULT FOR TYPE ore_64_8_v1 USING btree FAMILY ore_64_8_v1_btree_ops  AS
         OPERATOR 1 <,
         OPERATOR 2 <=,
         OPERATOR 3 =,
