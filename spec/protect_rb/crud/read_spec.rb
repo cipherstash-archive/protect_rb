@@ -370,5 +370,126 @@ RSpec.describe ProtectRB::Model::CRUD do
         end
       end
     end
+
+     describe "#order" do
+      context "when using an integer type" do
+        it "returns records using order asc" do
+          user_via_integer = CrudTesting.order(age: :asc).first
+
+          expect(user_via_integer).to_not be(nil)
+          expect(user_via_integer.age).to eq(29)
+        end
+
+        it "returns records using order desc" do
+          user_via_integer = CrudTesting.order(age: :desc).first
+
+          expect(user_via_integer).to_not be(nil)
+          expect(user_via_integer.age).to eq(75)
+        end
+      end
+
+      context "when using a boolean type" do
+        it "returns records using order asc" do
+          user_via_float = CrudTesting.order(verified: :asc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.verified).to eq(false)
+        end
+
+        it "returns records using order desc" do
+          user_via_float = CrudTesting.order(verified: :desc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.verified).to eq(true)
+        end
+      end
+
+      context "when using a date type" do
+        it "returns records using order asc" do
+          user_via_date = CrudTesting.order(dob: :asc).first
+
+          expect(user_via_date).to_not be(nil)
+          expect(user_via_date.dob).to eq(Date.new(1947,9,22))
+        end
+
+        it "returns records using order desc" do
+          user_via_date = CrudTesting.order(dob: :desc).first
+
+          expect(user_via_date).to_not be(nil)
+          expect(user_via_date.dob).to eq(Date.new(1993,3,11))
+        end
+      end
+
+      context "when using a datetime type" do
+        it "returns records using order asc" do
+          user_via_datetime = CrudTesting.order(last_login: :asc).first
+
+          expect(user_via_datetime).to_not be(nil)
+          expect(user_via_datetime.last_login).to eq(DateTime.new(2020,9,14))
+        end
+
+        it "returns records using order desc" do
+          user_via_datetime = CrudTesting.order(last_login: :desc).first
+
+          expect(user_via_datetime).to_not be(nil)
+          expect(user_via_datetime.last_login).to eq(DateTime.new(2022,10,12))
+        end
+      end
+
+      context "when using a float type" do
+        it "returns records using order asc" do
+          user_via_float = CrudTesting.order(latitude: :asc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.latitude).to eq(109.634496)
+        end
+
+        it "returns records using order desc" do
+          user_via_float = CrudTesting.order(latitude: :desc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.latitude).to eq(125.634496)
+        end
+      end
+
+      context "when using a combination of fields" do
+        it "returns records using both plaintext and encrypted fields" do
+          user_one = PlaintextTesting.create(
+            dob: Date.new(1947,9,22),
+            last_login: DateTime.new(2022,10,12),
+            age_plaintext: 82,
+            verified: false,
+            latitude: 113.634496,
+            email_plaintext: "kingsley.zissou@belafonte.com"
+          )
+
+          user_two = PlaintextTesting.create(
+            dob: Date.new(1940,9,22),
+            last_login: DateTime.new(2021,10,12),
+            age_plaintext: 82,
+            verified: true,
+            latitude: 113.634496,
+            email_plaintext: "steve.zissou@belafonte.com"
+          )
+
+          user_three = PlaintextTesting.create(
+            dob: Date.new(1962,9,22),
+            last_login: DateTime.new(2021,10,12),
+            age_plaintext: 60,
+            verified: true,
+            latitude: 113.634496,
+            email_plaintext: "steve.zissou@belafonte.com"
+          )
+
+          first_user = PlaintextTesting.order(:age_plaintext, last_login: :asc).first
+
+          expect(first_user).to_not be(nil)
+          expect(first_user.id).to eq(user_three.id)
+
+          last_user = PlaintextTesting.order(:age_plaintext, last_login: :asc).last
+          expect(last_user.id).to eq(user_one.id)
+        end
+      end
+    end
   end
 end
