@@ -371,7 +371,7 @@ RSpec.describe ProtectRB::Model::CRUD do
       end
     end
 
-     describe "#order" do
+    describe "#order" do
       context "when using an integer type" do
         it "returns records using order asc" do
           user_via_integer = CrudTesting.order(age: :asc).first
@@ -385,12 +385,6 @@ RSpec.describe ProtectRB::Model::CRUD do
 
           expect(user_via_integer).to_not be(nil)
           expect(user_via_integer.age).to eq(75)
-        end
-
-        it "returns records using where and order", :skip => "Not implemented yet" do
-          user_via_integer = CrudTesting.where(age: ..75).order(age: :asc).first
-          expect(user_via_integer).to_not be(nil)
-          expect(user_via_integer.age).to eq(29)
         end
       end
 
@@ -458,35 +452,8 @@ RSpec.describe ProtectRB::Model::CRUD do
         end
       end
 
-      context "when using a combination of fields" do
-        it "returns records using both plaintext and encrypted fields" do
-          user_one = PlaintextTesting.create(
-            dob: Date.new(1947,9,22),
-            last_login: DateTime.new(2022,10,12),
-            age_plaintext: 82,
-            verified: false,
-            latitude: 113.634496,
-            email_plaintext: "kingsley.zissou@belafonte.com"
-          )
-
-          user_two = PlaintextTesting.create(
-            dob: Date.new(1940,9,22),
-            last_login: DateTime.new(2021,10,12),
-            age_plaintext: 82,
-            verified: true,
-            latitude: 113.634496,
-            email_plaintext: "steve.zissou@belafonte.com"
-          )
-
-          user_three = PlaintextTesting.create(
-            dob: Date.new(1962,9,22),
-            last_login: DateTime.new(2021,10,12),
-            age_plaintext: 60,
-            verified: true,
-            latitude: 113.634496,
-            email_plaintext: "steve.zissou@belafonte.com"
-          )
-
+      context "when using a combination of fields and queries" do
+        it "returns ordered records using both plaintext and encrypted fields" do
           first_user = PlaintextTesting.order(:age_plaintext, last_login: :asc).first
 
           expect(first_user).to_not be(nil)
@@ -494,6 +461,21 @@ RSpec.describe ProtectRB::Model::CRUD do
 
           last_user = PlaintextTesting.order(:age_plaintext, last_login: :asc).last
           expect(last_user.id).to eq(user_one.id)
+        end
+
+        it "returns ordered records using a where clause with encrypted values" do
+          users_via_where = CrudTesting.where(age: ...75).order(age: :asc)
+
+          expect(users_via_where.length).to eq(3)
+          expect(users_via_where.first.age).to eq(29)
+        end
+
+        it "returns ordered records using a where clause with plaintext values" do
+          pt_users_via_where = PlaintextTesting.where(email_plaintext: "steve.zissou@belafonte.com").order(age_plaintext: :desc)
+
+          expect(pt_users_via_where.length).to eq(2)
+          expect(pt_users_via_where.first.id).to eq(user_two.id)
+          expect(pt_users_via_where.last.id).to eq(user_three.id)
         end
       end
     end
