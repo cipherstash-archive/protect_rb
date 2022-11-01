@@ -12,12 +12,12 @@ RSpec.describe ProtectRB::Model::CRUD do
         )
 
         expect(user.age_secure_search).to_not be(nil)
-        expect(user.age_secure_search.class).to eq(ProtectRB::ActiveRecordExtensions::ORE_64_8_V1)
+        expect(user.age_secure_search.class).to eq(ORE_64_8_V1)
         expect(user.age_secure_search.ciphertext).to_not be(nil)
 
         expect(user.age_ciphertext).to_not be(nil)
 
-        returned_user = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(84))
+        returned_user = CrudTesting.where(age_secure_search: ORE_64_8_V1.encrypt(84))
 
         expect(returned_user.first.id).to eq(user.id)
       end
@@ -35,12 +35,12 @@ RSpec.describe ProtectRB::Model::CRUD do
         )
 
         expect(user.age_secure_search).to_not be(nil)
-        expect(user.age_secure_search.class).to eq(ProtectRB::ActiveRecordExtensions::ORE_64_8_V1)
+        expect(user.age_secure_search.class).to eq(ORE_64_8_V1)
         expect(user.age_secure_search.ciphertext).to_not be(nil)
 
         expect(user.age_ciphertext).to_not be(nil)
 
-        returned_user = CrudTesting.where(age_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(84))
+        returned_user = CrudTesting.where(age_secure_search: ORE_64_8_V1.encrypt(84))
 
         expect(returned_user.first.id).to eq(user.id)
       end
@@ -69,14 +69,14 @@ RSpec.describe ProtectRB::Model::CRUD do
         )
 
         user_one = CrudTesting.where(
-          email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com")
+          email_secure_search: ORE_64_8_V1.encrypt("steve.zissou@belafonte.com")
         )
         expect(user_one.length).to eq(1)
         expect(user_one.first.email_secure_search).to_not be(nil)
         expect(user_one.first.email).to eq("steve.zissou@belafonte.com")
 
         user_two = CrudTesting.where(
-          email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("pt.anderson@magnolia.com")
+          email_secure_search: ORE_64_8_V1.encrypt("pt.anderson@magnolia.com")
         )
 
         expect(user_two.length).to eq(1)
@@ -108,14 +108,14 @@ RSpec.describe ProtectRB::Model::CRUD do
         )
 
         user_one = CrudTesting.where(
-          email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("steve.zissou@belafonte.com")
+          email_secure_search: ORE_64_8_V1.encrypt("steve.zissou@belafonte.com")
         )
         expect(user_one.length).to eq(1)
         expect(user_one.first.email_secure_search).to_not be(nil)
         expect(user_one.first.email).to eq("steve.zissou@belafonte.com")
 
         user_two = CrudTesting.where(
-          email_secure_search: ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt("pt.anderson@magnolia.com")
+          email_secure_search: ORE_64_8_V1.encrypt("pt.anderson@magnolia.com")
         )
 
         expect(user_two.length).to eq(1)

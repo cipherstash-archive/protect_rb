@@ -7,6 +7,8 @@ require "debug"
 require "pry"
 require "database_cleaner"
 
+include ProtectRB::ActiveRecordExtensions
+
 ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
 ENV["CS_PROTECT_KEY"] = ProtectRB.generate_key
 
