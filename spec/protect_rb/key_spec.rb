@@ -85,14 +85,15 @@ RSpec.describe "ProtectRB master key" do
     end
   end
 
-  describe "Lockbox master key" do
+  describe "Lockbox master key", :focus do
     context "Nil value" do
       before(:each) do
+        Lockbox.master_key = nil
         ENV['LOCKBOX_MASTER_KEY'] = nil
       end
 
       after(:each) do
-          ENV['LOCKBOX_MASTER_KEY'] = Lockbox.generate_key
+        ENV['LOCKBOX_MASTER_KEY'] = Lockbox.generate_key
       end
 
       it "raises an error" do
