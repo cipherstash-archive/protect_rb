@@ -1,6 +1,7 @@
 module ProtectRB
   module Model
     module PredicateBuilder
+      include ProtectRB::ActiveRecordExtensions
       # This intercepts the build call.
       # Updates the attribute to the searchable attribute field (e.g email_secure_search)
       # and ORE encrypts the value.
@@ -15,7 +16,7 @@ module ProtectRB
             if range_query?(value)
               value = encrypt_range(value)
             else
-              value = ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value)
+              value = ORE_64_8_V1.encrypt(value)
             end
           end
         end
@@ -28,20 +29,18 @@ module ProtectRB
       end
 
       def encrypt_range(value)
-        if value.to_s.include? "..."
+        if value.exclude_end?
           if value.begin == nil
-            return value.begin...ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value.end)
+            return value.begin...ORE_64_8_V1.encrypt(value.end)
           end
         end
 
-        if value.to_s.include? ".."
-          if value.begin == nil
-            return Range.new(value.begin, ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value.end))
-          end
+        if value.begin == nil
+          return Range.new(value.begin, ORE_64_8_V1.encrypt(value.end))
+        end
 
-          if value.end == nil
-            return Range.new(ProtectRB::ActiveRecordExtensions::ORE_64_8_V1.encrypt(value.begin), value.end)
-          end
+        if value.end == nil
+          return Range.new(ORE_64_8_V1.encrypt(value.begin), value.end)
         end
       end
     end
