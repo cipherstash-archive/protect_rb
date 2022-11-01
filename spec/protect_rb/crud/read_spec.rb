@@ -386,6 +386,12 @@ RSpec.describe ProtectRB::Model::CRUD do
           expect(user_via_integer).to_not be(nil)
           expect(user_via_integer.age).to eq(75)
         end
+
+        it "returns records using where and order", :skip => "Not implemented yet" do
+          user_via_integer = CrudTesting.where(age: ..75).order(age: :asc).first
+          expect(user_via_integer).to_not be(nil)
+          expect(user_via_integer.age).to eq(29)
+        end
       end
 
       context "when using a boolean type" do
