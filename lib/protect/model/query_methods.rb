@@ -39,6 +39,34 @@ module Protect
           end
         super(updated_args)
       end
+
+      def select(*fields)
+        search_attrs = protect_search_attrs
+
+        if search_attrs.nil?
+          return super(*fields)
+        end
+
+        modified_fields = protect_map_to_encrypted_attrs(search_attrs, fields)
+
+        super(modified_fields)
+      end
+
+      def protect_map_to_encrypted_attrs(search_attrs, attrs)
+        modified_attrs = []
+
+        attrs.map do |attr|
+          search_attr = search_attrs[attr]
+          if search_attr
+            modified_attrs.push(search_attrs[attr].fetch(:searchable_attribute))
+            modified_attrs.push(search_attrs[attr].fetch(:lockbox_attribute).fetch(:encrypted_attribute))
+          else
+            attr
+          end
+        end
+
+        modified_attrs
+      end
     end
   end
 end
