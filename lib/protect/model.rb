@@ -14,7 +14,7 @@ module Protect
       end
 
       def protect_search_attrs
-        @protect_search_attrs
+        @protect_search_attrs ||= {}
       end
     end
   end
