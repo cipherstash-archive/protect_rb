@@ -7,20 +7,20 @@ require_relative "./model/query_methods"
 
 if defined?(ActiveSupport.on_load)
   ActiveSupport.on_load(:active_record) do
-    ActiveRecord::Base.include ProtectRB::Model
-    ActiveRecord::DynamicMatchers::Method.prepend(ProtectRB::Model::DynamicMatchers)
-    ActiveRecord::PredicateBuilder.prepend(ProtectRB::Model::PredicateBuilder)
-    ActiveRecord::Relation.prepend(ProtectRB::Model::QueryMethods)
+    ActiveRecord::Base.include Protect::Model
+    ActiveRecord::DynamicMatchers::Method.prepend(Protect::Model::DynamicMatchers)
+    ActiveRecord::PredicateBuilder.prepend(Protect::Model::PredicateBuilder)
+    ActiveRecord::Relation.prepend(Protect::Model::QueryMethods)
 
     require "active_record/connection_adapters/postgresql_adapter"
 
     ActiveRecord::Type.register(
       "ore_64_8_v1",
-      ProtectRB::ActiveRecordExtensions::ORE_64_8_V1_Type,
+      Protect::ActiveRecordExtensions::ORE_64_8_V1_Type,
       override: true,
       adapter: :postgresql
     )
 
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend ::ProtectRB::DatabaseExtensions::Postgresql::ConnectionAdapter
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend ::Protect::DatabaseExtensions::Postgresql::ConnectionAdapter
   end
 end

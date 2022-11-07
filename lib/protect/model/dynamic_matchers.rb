@@ -1,4 +1,4 @@
-module ProtectRB
+module Protect
   module Model
     module DynamicMatchers
       def valid?
@@ -6,7 +6,7 @@ module ProtectRB
       end
 
       def search_attrs?(name)
-        model.is_protected? && model.protect_rb_search_attrs[name]
+        model.is_protected? && model.protect_search_attrs[name]
       end
     end
   end

@@ -1,8 +1,8 @@
-module ProtectRB
+module Protect
   class Logger
     class << self
       def debug(message)
-        instance.debug("ProtectRB: #{message}")
+        instance.debug("Protect: #{message}")
       end
 
       def info(message)

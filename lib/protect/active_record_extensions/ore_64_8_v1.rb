@@ -1,4 +1,4 @@
-module ProtectRB
+module Protect
   module ActiveRecordExtensions
     class ORE_64_8_V1_Type < ::ActiveRecord::Type::Value
       def type
@@ -62,7 +62,7 @@ module ProtectRB
 
       def self.get_keys(protect_key)
         if protect_key.nil? || protect_key[/\H/] || protect_key.length != 64
-          raise ProtectRB::Error, "Invalid CS_PROTECT_KEY. Use ProtectRB.generate_key to create a key."
+          raise Protect::Error, "Invalid CS_PROTECT_KEY. Use Protect.generate_key to create a key."
         end
 
         protect_key.chars.each_slice(32).map(&:join)

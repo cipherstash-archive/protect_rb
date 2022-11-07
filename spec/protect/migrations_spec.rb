@@ -1,4 +1,4 @@
-RSpec.describe "A ProtectRB customer can run migrations to define searchable columns", :type => :extensions_test do
+RSpec.describe "A Protect customer can run migrations to define searchable columns", :type => :extensions_test do
   let(:migration) {
     class AcmeCorpUser < ActiveRecord::Migration[7.0]
       def change
@@ -12,11 +12,11 @@ RSpec.describe "A ProtectRB customer can run migrations to define searchable col
 
   describe "when the custom extensions are installed" do
     before(:each) do
-      ProtectRB::DatabaseExtensions.install rescue nil
+      Protect::DatabaseExtensions.install rescue nil
     end
 
     after(:each) do
-      ProtectRB::DatabaseExtensions.uninstall rescue nil
+      Protect::DatabaseExtensions.uninstall rescue nil
       migration.migrate(:down) rescue nil
     end
 

@@ -1,4 +1,4 @@
-module ProtectRB
+module Protect
   module Model
     module QueryMethods
       # Intercepts the order call to update any virtual attributes to use the
@@ -6,7 +6,7 @@ module ProtectRB
       # Args are an array of Symbols for default ordering and a Hash for fields noted with a direction.
       # [:age_plaintext, {:last_login=>:asc, :email=>:asc}]
       def order(*args)
-        search_attrs = protect_rb_search_attrs
+        search_attrs = protect_search_attrs
 
         if search_attrs.nil?
           return super(*args)

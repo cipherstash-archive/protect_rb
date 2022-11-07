@@ -5,7 +5,7 @@ rescue LoadError
 end
 
 Gem::Specification.new do |spec|
-  spec.name          = "protect_rb"
+  spec.name          = "protect"
   spec.version       = GVB.version rescue "0.0.0.1.NOGVB"
   spec.date          = GVB.date    rescue Time.now.strftime("%Y-%m-%d")
   spec.authors       = ["Fi McCawley", "James Sadler"]
@@ -13,17 +13,17 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Add searchable encryption to your rails models}
   spec.description   = %q{This gem wraps the CipherStash order-revealing-encryption library and enhances ActiveRecord to support encrypted search}
-  spec.homepage      = "https://cipherstash.com/protect_rb"
+  spec.homepage      = "https://cipherstash.com/protect"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/cipherstash/protect_rb"
-  spec.metadata["changelog_uri"] = "https://github.com/cipherstash/protect_rb/releases"
-  spec.metadata["bug_tracker_uri"] = "https://github.com/cipherstash/protect_rb/issues"
-  spec.metadata["documentation_uri"] = "https://rubydoc.info/gems/protect_rb"
+  spec.metadata["source_code_uri"] = "https://github.com/cipherstash/protect"
+  spec.metadata["changelog_uri"] = "https://github.com/cipherstash/protect/releases"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/cipherstash/protect/issues"
+  spec.metadata["documentation_uri"] = "https://rubydoc.info/gems/protect"
   spec.metadata["mailing_list_uri"] = "https://discuss.cipherstash.com"
 
   spec.add_runtime_dependency "activerecord"

@@ -1,19 +1,19 @@
-module ProtectRB
+module Protect
   module DatabaseExtensions
     def self.install
-      ProtectRB::Logger.info("Installing database extension.....")
+      Protect::Logger.info("Installing database extension.....")
 
       ActiveRecord::Base.connection.execute(install_script)
 
-      ProtectRB::Logger.info("Database extension installed.")
+      Protect::Logger.info("Database extension installed.")
     end
 
     def self.uninstall
-      ProtectRB::Logger.info("Uninstalling database extension.....")
+      Protect::Logger.info("Uninstalling database extension.....")
 
       ActiveRecord::Base.connection.execute(uninstall_script)
 
-      ProtectRB::Logger.info("Database extension uninstalled.")
+      Protect::Logger.info("Database extension uninstalled.")
     end
 
     private
@@ -31,7 +31,7 @@ module ProtectRB
       if database_kind =~ /postgresql/
         File.join(__dir__, "database_extensions", "postgresql")
       else
-        raise NotImplementedError, "ProtectRB does not (yet) support #{database_kind}"
+        raise NotImplementedError, "Protect does not (yet) support #{database_kind}"
       end
     end
   end

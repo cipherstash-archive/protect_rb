@@ -1,4 +1,4 @@
-RSpec.describe "ProtectRB master key" do
+RSpec.describe "Protect master key" do
   describe "cs_protect_key" do
     context "nil value" do
       before(:each) do
@@ -6,7 +6,7 @@ RSpec.describe "ProtectRB master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = ProtectRB.generate_key
+         ENV['CS_PROTECT_KEY'] = Protect.generate_key
       end
 
       it "raises an error" do
@@ -17,7 +17,7 @@ RSpec.describe "ProtectRB master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(ProtectRB::Error, "Invalid CS_PROTECT_KEY. Use ProtectRB.generate_key to create a key.")
+        )}.to raise_error(Protect::Error, "Invalid CS_PROTECT_KEY. Use Protect.generate_key to create a key.")
       end
     end
 
@@ -27,7 +27,7 @@ RSpec.describe "ProtectRB master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = ProtectRB.generate_key
+         ENV['CS_PROTECT_KEY'] = Protect.generate_key
       end
 
       it "raises an error" do
@@ -38,7 +38,7 @@ RSpec.describe "ProtectRB master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(ProtectRB::Error, "Invalid CS_PROTECT_KEY. Use ProtectRB.generate_key to create a key.")
+        )}.to raise_error(Protect::Error, "Invalid CS_PROTECT_KEY. Use Protect.generate_key to create a key.")
       end
     end
 
@@ -48,7 +48,7 @@ RSpec.describe "ProtectRB master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = ProtectRB.generate_key
+         ENV['CS_PROTECT_KEY'] = Protect.generate_key
       end
 
       it "raises an error" do
@@ -59,7 +59,7 @@ RSpec.describe "ProtectRB master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(ProtectRB::Error, "Invalid CS_PROTECT_KEY. Use ProtectRB.generate_key to create a key.")
+        )}.to raise_error(Protect::Error, "Invalid CS_PROTECT_KEY. Use Protect.generate_key to create a key.")
       end
     end
 
@@ -69,7 +69,7 @@ RSpec.describe "ProtectRB master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = ProtectRB.generate_key
+         ENV['CS_PROTECT_KEY'] = Protect.generate_key
       end
 
       it "does not raise an error" do

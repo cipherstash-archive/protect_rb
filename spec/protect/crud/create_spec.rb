@@ -1,4 +1,4 @@
-RSpec.describe ProtectRB::Model::CRUD do
+RSpec.describe Protect::Model::CRUD do
   describe "Create" do
     context "when using #create" do
       it "creates a single record with ore and lockbox encrypted values" do

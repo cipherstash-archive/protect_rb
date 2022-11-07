@@ -5,8 +5,8 @@ RSpec::Core::RakeTask.new(:spec => 'db:create')
 
 namespace :db do
   databases = [
-    "protect_rb_test",
-    "protect_rb_test_alt",
+    "protect_test",
+    "protect_test_alt",
   ]
 
   def db_exists?(db)
