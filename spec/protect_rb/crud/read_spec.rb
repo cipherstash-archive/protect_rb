@@ -1,41 +1,38 @@
 RSpec.describe ProtectRB::Model::CRUD do
   describe "Read" do
     before(:each) do
-       CrudTesting.create!(
+       CrudTesting.create!([{
         dob: Date.new(1950,9,21),
         last_login: DateTime.new(2020,9,14),
         age: 72,
         verified: true,
         latitude: 125.634496,
         email: "steve.zissou@belafonte.com"
-      )
-
-      CrudTesting.create!(
-        dob: Date.new(1947,9,22),
-        last_login: DateTime.new(2022,10,12),
-        age: 75,
-        verified: false,
-        latitude: 113.634496,
-        email: "kingsley.zissou@belafonte.com"
-      )
-
-      CrudTesting.create!(
-        dob: Date.new(1967,9,27),
-        last_login: DateTime.new(2022,7,1),
-        age: 55,
-        verified: false,
-        latitude: 109.634496,
-        email: "royal@tenenbaum.com"
-      )
-
-      CrudTesting.create!(
-        dob: Date.new(1993,3,11),
-        last_login: DateTime.new(2022,8,7),
-        age: 29,
-        verified: true,
-        latitude: 115.634496,
-        email: "etheline@tenenbaum.com"
-      )
+        },
+        {
+          dob: Date.new(1947,9,22),
+          last_login: DateTime.new(2022,10,12),
+          age: 75,
+          verified: false,
+          latitude: 113.634496,
+          email: "kingsley.zissou@belafonte.com"
+        },
+        {
+          dob: Date.new(1967,9,27),
+          last_login: DateTime.new(2022,7,1),
+          age: 55,
+          verified: false,
+          latitude: 109.634496,
+          email: "royal@tenenbaum.com"
+        },
+        {
+          dob: Date.new(1993,3,11),
+          last_login: DateTime.new(2022,8,7),
+          age: 29,
+          verified: true,
+          latitude: 115.634496,
+          email: "etheline@tenenbaum.com"
+        }])
     end
 
     describe "equality queries" do
@@ -127,7 +124,9 @@ RSpec.describe ProtectRB::Model::CRUD do
         end
 
         it "returns records using dynamic finders" do
-          user_via_datetime = CrudTesting.find_by(last_login: DateTime.new(2022,8,7))
+          user_via_datetime = CrudTesting.find_by_last_login(
+            DateTime.new(2022,8,7)
+          )
 
           expect(user_via_datetime).to_not be(nil)
           expect(user_via_datetime.last_login).to eq(DateTime.new(2022,8,7))
@@ -367,6 +366,141 @@ RSpec.describe ProtectRB::Model::CRUD do
           )
 
           expect(user_via_boolean.length).to eq(4)
+        end
+      end
+    end
+
+    describe "#order" do
+      context "when using an integer type" do
+        it "returns records using order asc" do
+          user_via_integer = CrudTesting.order(age: :asc).first
+
+          expect(user_via_integer).to_not be(nil)
+          expect(user_via_integer.age).to eq(29)
+        end
+
+        it "returns records using order desc" do
+          user_via_integer = CrudTesting.order(age: :desc).first
+
+          expect(user_via_integer).to_not be(nil)
+          expect(user_via_integer.age).to eq(75)
+        end
+      end
+
+      context "when using a boolean type" do
+        it "returns records using order asc" do
+          user_via_float = CrudTesting.order(verified: :asc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.verified).to eq(false)
+        end
+
+        it "returns records using order desc" do
+          user_via_float = CrudTesting.order(verified: :desc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.verified).to eq(true)
+        end
+      end
+
+      context "when using a date type" do
+        it "returns records using order asc" do
+          user_via_date = CrudTesting.order(dob: :asc).first
+
+          expect(user_via_date).to_not be(nil)
+          expect(user_via_date.dob).to eq(Date.new(1947,9,22))
+        end
+
+        it "returns records using order desc" do
+          user_via_date = CrudTesting.order(dob: :desc).first
+
+          expect(user_via_date).to_not be(nil)
+          expect(user_via_date.dob).to eq(Date.new(1993,3,11))
+        end
+      end
+
+      context "when using a datetime type" do
+        it "returns records using order asc" do
+          user_via_datetime = CrudTesting.order(last_login: :asc).first
+
+          expect(user_via_datetime).to_not be(nil)
+          expect(user_via_datetime.last_login).to eq(DateTime.new(2020,9,14))
+        end
+
+        it "returns records using order desc" do
+          user_via_datetime = CrudTesting.order(last_login: :desc).first
+
+          expect(user_via_datetime).to_not be(nil)
+          expect(user_via_datetime.last_login).to eq(DateTime.new(2022,10,12))
+        end
+      end
+
+      context "when using a float type" do
+        it "returns records using order asc" do
+          user_via_float = CrudTesting.order(latitude: :asc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.latitude).to eq(109.634496)
+        end
+
+        it "returns records using order desc" do
+          user_via_float = CrudTesting.order(latitude: :desc).first
+
+          expect(user_via_float).to_not be(nil)
+          expect(user_via_float.latitude).to eq(125.634496)
+        end
+      end
+
+      context "when using a combination of fields and queries" do
+        before(:each) do
+          PlaintextTesting.create([{
+            dob: Date.new(1947,9,22),
+            last_login: DateTime.new(2022,10,12),
+            age_plaintext: 82,
+            verified: false,
+            latitude: 113.634496,
+            email_plaintext: "kingsley.zissou@belafonte.com"
+          },
+          {
+            dob: Date.new(1940,9,22),
+            last_login: DateTime.new(2021,10,12),
+            age_plaintext: 82,
+            verified: true,
+            latitude: 113.634496,
+            email_plaintext: "steve.zissou@belafonte.com"
+          },
+          {
+            dob: Date.new(1962,9,22),
+            last_login: DateTime.new(2021,10,12),
+            age_plaintext: 60,
+            verified: true,
+            latitude: 113.634496,
+            email_plaintext: "steve.zissou@belafonte.com"
+          }])
+        end
+
+        it "returns ordered records using both plaintext and encrypted fields" do
+          users = PlaintextTesting.order(:age_plaintext, last_login: :asc)
+          expect(users.first).to_not be(nil)
+          expect(users.first.age_plaintext).to eq(60)
+
+          expect(users.last.age_plaintext).to eq(82)
+          expect(users.last.last_login).to eq(DateTime.new(2022,10,12))
+        end
+
+        it "returns records using a where clause with encrypted values" do
+          users_via_where = CrudTesting.where(age: ...75).order(age: :asc)
+
+          expect(users_via_where.length).to eq(3)
+          expect(users_via_where.first.age).to eq(29)
+        end
+
+        it "returns records using a where clause with plaintext values" do
+          pt_users_via_where = PlaintextTesting.where(email_plaintext: "steve.zissou@belafonte.com").order(age_plaintext: :desc)
+
+          expect(pt_users_via_where.length).to eq(2)
+          expect(pt_users_via_where.first.age_plaintext).to eq(82)
+          expect(pt_users_via_where.last.age_plaintext).to eq(60)
         end
       end
     end
