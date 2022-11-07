@@ -15,9 +15,6 @@ class CreateUsersTableForDslTesting < ActiveRecord::Migration[7.0]
 
       # Used to assert an error message is generated
       t.column :email_secure_search, :text
-
-      # Used to assert an error message is generated
-      t.text :unencrypted_data_ciphertext
     end
   end
 end

@@ -12,9 +12,10 @@ module Protect
             raise Protect::Error, "Attribute '#{attribute}' is already specified as a secure search attribute."
           end
 
-          if !lockbox_encrypted?(self, attribute)
-            raise Protect::Error, "Attribute '#{attribute}' is not encrypted by Lockbox."
-          end
+          type = options.delete(:type) || :string
+
+          # Call Lockbox to ensure that the underlying attribute is encrypted
+          has_encrypted attribute, :type => type
 
           column_name =
             options.delete(:searchable_attribute) ||
@@ -26,18 +27,12 @@ module Protect
 
           @protect_search_attrs[attribute] = {
             searchable_attribute: column_name.to_s,
+            type: type,
             lockbox_attribute: lockbox_attributes[attribute]
           }
         end
 
         private
-
-        def lockbox_encrypted?(model, attribute)
-          return false if !model.respond_to?(:lockbox_attributes)
-          return false if !model.lockbox_attributes.kind_of?(Hash)
-
-          lockbox_attributes.has_key?(attribute)
-        end
 
         def ore_64_8_v1?(column_name)
           columns_hash[column_name.to_s].sql_type_metadata.sql_type.to_sym == :ore_64_8_v1

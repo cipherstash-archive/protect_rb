@@ -1,18 +1,6 @@
 RSpec.describe Protect::Model::DSL do
   describe "class_methods" do
     context "secure_search" do
-      it "raises an error when there are no lockbox attributes specified" do
-        expect {
-          WithoutLockboxAttributes.secure_search :unencrypted_data
-        }.to raise_error(Protect::Error, "Attribute 'unencrypted_data' is not encrypted by Lockbox.")
-      end
-
-      it "raises an error when the source attribute is not encrypted by Lockbox" do
-        expect {
-          DslTesting.secure_search :unencrypted_data
-        }.to raise_error(Protect::Error,  "Attribute 'unencrypted_data' is not encrypted by Lockbox.")
-      end
-
       it "raises an error when a secure_search attribute is not of type :ore_64_8_v1" do
         expect {
           DslTesting.secure_search :email
