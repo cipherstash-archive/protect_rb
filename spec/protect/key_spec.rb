@@ -85,7 +85,7 @@ RSpec.describe "Protect master key" do
     end
   end
 
-  describe "Lockbox master key", :focus do
+  describe "Lockbox master key" do
     context "Nil value" do
       before(:each) do
         Lockbox.master_key = nil

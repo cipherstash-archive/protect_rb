@@ -25,6 +25,19 @@ end
 
 RSpec.configure do |config|
   config.full_backtrace = ENV.key?("RSPEC_FULL_BACKTRACE")
+  config.run_all_when_everything_filtered = true
+
+  config.backtrace_inclusion_patterns = [
+    /\/lib\/protect/,
+    /\/spec\/protect/,
+  ]
+  config.backtrace_exclusion_patterns = [
+    /\/lib\d*\/ruby\//,
+    /\/gems\//,
+    /\/bin\//,
+    /\/lib\/rspec\/(core|expectations|matchers|mocks)/,
+    /\/vendor\/bundler/,
+  ]
 
   # Everything in spec/protect/ is a :type => :db spec unless marked
   # otherwise, eg.
