@@ -25,6 +25,7 @@ end
 
 RSpec.configure do |config|
   config.full_backtrace = ENV.key?("RSPEC_FULL_BACKTRACE")
+  config.run_all_when_everything_filtered = true
 
   # Everything in spec/protect/ is a :type => :db spec unless marked
   # otherwise, eg.
