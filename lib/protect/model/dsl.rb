@@ -6,9 +6,7 @@ module Protect
       extend ActiveSupport::Concern
       class_methods do
         def secure_search(attribute, **options)
-          @protect_search_attrs ||= {}
-
-          if duplicate_secure_search_attribute?(@protect_search_attrs, attribute)
+          if duplicate_secure_search_attribute?(protect_search_attrs, attribute)
             raise Protect::Error, "Attribute '#{attribute}' is already specified as a secure search attribute."
           end
 
@@ -25,7 +23,7 @@ module Protect
             raise Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
           end
 
-          @protect_search_attrs[attribute] = {
+          protect_search_attrs[attribute] = {
             searchable_attribute: column_name.to_s,
             type: type,
             lockbox_attribute: lockbox_attributes[attribute]
