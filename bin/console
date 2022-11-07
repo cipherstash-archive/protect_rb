@@ -2,22 +2,22 @@
 
 require "bundler/setup"
 require "active_record"
-require "protect_rb"
+require "protect"
 require "lockbox"
 
 ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
-ENV["CS_PROTECT_KEY"] = ProtectRB.generate_key
+ENV["CS_PROTECT_KEY"] = Protect.generate_key
 
 ActiveRecord::Base.establish_connection(
   adapter: 'postgresql',
   host: 'localhost',
   username: ENV["PGUSER"] || nil,
   password: ENV["PGPASSWORD"] || nil,
-  database: ENV["PGDATABASE"] || 'protect_rb_test'
+  database: ENV["PGDATABASE"] || 'protect_test'
 )
 
 require './spec/support/models/crud_testing'
-include ProtectRB::ActiveRecordExtensions
+include Protect::ActiveRecordExtensions
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.

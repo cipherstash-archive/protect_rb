@@ -1,16 +1,16 @@
 require "bundler/setup"
 require 'rspec/expectations'
 require "active_record"
-require "protect_rb"
+require "protect"
 require "lockbox"
 require "debug"
 require "pry"
 require "database_cleaner"
 
-include ProtectRB::ActiveRecordExtensions
+include Protect::ActiveRecordExtensions
 
 ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
-ENV["CS_PROTECT_KEY"] = ProtectRB.generate_key
+ENV["CS_PROTECT_KEY"] = Protect.generate_key
 
 def establish_connection(**attrs)
   ActiveRecord::Base.establish_connection(
@@ -26,11 +26,11 @@ end
 RSpec.configure do |config|
   config.full_backtrace = ENV.key?("RSPEC_FULL_BACKTRACE")
 
-  # Everything in spec/protect_rb/ is a :type => :db spec unless marked
+  # Everything in spec/protect/ is a :type => :db spec unless marked
   # otherwise, eg.
   #   RSpec.describe "tests", type: :extensions_test do
   config.define_derived_metadata(
-    file_path: Regexp.new('/spec/protect_rb/')
+    file_path: Regexp.new('/spec/protect/')
   ) do |metadata|
     metadata[:type] = :db if metadata[:type].nil?
   end
@@ -38,14 +38,14 @@ RSpec.configure do |config|
   ### Extension-related tests ###
   config.before(:all, type: :extensions_test) do
     establish_connection(
-      database: 'protect_rb_test_alt'
+      database: 'protect_test_alt'
     )
   end
 
   ### Regular :db tests ###
   config.before(:all, type: :db) do
     establish_connection(
-      database: 'protect_rb_test'
+      database: 'protect_test'
     )
 
     DatabaseCleaner.strategy = :transaction

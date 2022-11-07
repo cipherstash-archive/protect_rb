@@ -1,4 +1,4 @@
-RSpec.describe ProtectRB::Model::CRUD do
+RSpec.describe Protect::Model::CRUD do
   describe "Read" do
     before(:each) do
        CrudTesting.create!([{

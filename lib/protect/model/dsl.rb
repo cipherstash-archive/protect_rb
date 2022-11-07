@@ -1,19 +1,19 @@
 require "active_support/concern"
 
-module ProtectRB
+module Protect
   module Model
     module DSL
       extend ActiveSupport::Concern
       class_methods do
         def secure_search(attribute, **options)
-          @protect_rb_search_attrs ||= {}
+          @protect_search_attrs ||= {}
 
-          if duplicate_secure_search_attribute?(@protect_rb_search_attrs, attribute)
-            raise ProtectRB::Error, "Attribute '#{attribute}' is already specified as a secure search attribute."
+          if duplicate_secure_search_attribute?(@protect_search_attrs, attribute)
+            raise Protect::Error, "Attribute '#{attribute}' is already specified as a secure search attribute."
           end
 
           if !lockbox_encrypted?(self, attribute)
-            raise ProtectRB::Error, "Attribute '#{attribute}' is not encrypted by Lockbox."
+            raise Protect::Error, "Attribute '#{attribute}' is not encrypted by Lockbox."
           end
 
           column_name =
@@ -21,10 +21,10 @@ module ProtectRB
               "#{attribute}_secure_search"
 
           if !ore_64_8_v1?(column_name)
-            raise ProtectRB::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
+            raise Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
           end
 
-          @protect_rb_search_attrs[attribute] = {
+          @protect_search_attrs[attribute] = {
             searchable_attribute: column_name.to_s,
             lockbox_attribute: lockbox_attributes[attribute]
           }
