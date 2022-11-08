@@ -2,12 +2,12 @@ RSpec.describe Protect::Model::CRUD do
   describe "Read" do
     before(:each) do
        CrudTesting.create!([{
-        dob: Date.new(1950,9,21),
-        last_login: DateTime.new(2020,9,14),
-        age: 72,
-        verified: true,
-        latitude: 125.634496,
-        email: "steve.zissou@belafonte.com"
+          dob: Date.new(1950,9,21),
+          last_login: DateTime.new(2020,9,14),
+          age: 72,
+          verified: true,
+          latitude: 125.634496,
+          email: "steve.zissou@belafonte.com"
         },
         {
           dob: Date.new(1947,9,22),
@@ -502,6 +502,27 @@ RSpec.describe Protect::Model::CRUD do
           expect(pt_users_via_where.first.age_plaintext).to eq(82)
           expect(pt_users_via_where.last.age_plaintext).to eq(60)
         end
+      end
+    end
+
+    describe "#select" do
+      it "returns records with only the selected fields" do
+        user = CrudTesting.select(:age, :latitude).first
+
+        expect(user.age).to_not be(nil)
+        expect(user.latitude).to_not be(nil)
+
+        expect { user.email }.to raise_error ActiveModel::MissingAttributeError
+        expect { user.last_login }.to raise_error ActiveModel::MissingAttributeError
+        expect { user.dob }.to raise_error ActiveModel::MissingAttributeError
+        expect { user.verified }.to raise_error ActiveModel::MissingAttributeError
+      end
+
+      it "returns records when used with a where clause" do
+        users = CrudTesting.select(:age).where(age: ..72).order(age: :desc)
+
+        expect(users.length).to eq(3)
+        expect(users.first.age).to eq(72)
       end
     end
   end
