@@ -519,7 +519,7 @@ RSpec.describe Protect::Model::CRUD do
       end
 
       it "returns records when used with a where clause" do
-        users = CrudTesting.select(:age).where(age: ..72)
+        users = CrudTesting.select(:age).where(age: ..72).order(age: :desc)
 
         expect(users.length).to eq(3)
         expect(users.first.age).to eq(72)
