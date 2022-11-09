@@ -9,12 +9,12 @@ module Protect
     include Protect::Model::CRUD
 
     class_methods do
-      def is_protected?
-        @protect_search_attrs.size > 0
-      end
-
       def protect_search_attrs
         @protect_search_attrs ||= {}
+      end
+
+      def is_protected?
+        protect_search_attrs.size > 0
       end
     end
   end
