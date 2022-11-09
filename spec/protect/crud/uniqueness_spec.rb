@@ -30,4 +30,33 @@ RSpec.describe "Protect::Model Creation Uniqueness" do
       }.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
+
+  describe "Uniqueness validation" do
+    let(:model) {
+      Class.new(ActiveRecord::Base) do
+        self.table_name = 'users_for_uniqueness_testing'
+
+        secure_search :example_validation, type: :string
+        validates :example_validation, uniqueness: true
+      end
+    }
+
+    it "fails to save when the secure-search value is not unique" do
+      value = 'example123'
+
+      user1 = model.create(
+        example_validation: value,
+      )
+      expect(user1.persisted?).to be true
+      expect(user1.example_validation).to eq value
+      expect(user1.errors).to be_empty
+
+      user2 = model.create(
+        example_validation: value,
+      )
+      expect(user2.persisted?).to be false
+      expect(user2.errors).to_not be_empty
+      expect(user2.errors[:example_validation]).to match(/[Uu]nique/)
+    end
+  end
 end
