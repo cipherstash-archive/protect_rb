@@ -8,10 +8,10 @@ With Protect you never need trade security for queryability - you can have both!
 
 Protect is compatible with the following databases:
 
-* Postgres (self-hosted / cloud-hosted, e.g. Amazon RDS)
-* MySQL (planned)
-* MS SQL (planned)
-* CockroachDB (planned)
+- Postgres (self-hosted / cloud-hosted, e.g. Amazon RDS)
+- MySQL (planned)
+- MS SQL (planned)
+- CockroachDB (planned)
 
 ## Installation
 
@@ -30,12 +30,11 @@ This is achieved by creating a new Rails migration the usual way, and adding the
 ```ruby
 class AddProtectRBSupport < ActiveRecord::Migration[7.0]
   def up
-    Protect::DatabaseExtensionTypes.install
+    Protect::DatabaseExtensions.install
   end
 
   def down
-    Protect::DatabaseExtensionTypes.remove
+    Protect::DatabaseExtensions.remove
   end
 end
 ```
-
