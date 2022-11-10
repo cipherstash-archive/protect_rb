@@ -1,5 +1,3 @@
-require 'rails'
-
 module Protect
   class Railtie < Rails::Railtie
     rake_tasks do
