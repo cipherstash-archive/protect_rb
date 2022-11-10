@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "lockbox"
   spec.add_runtime_dependency "ore-rs"
   spec.add_runtime_dependency "git-version-bump", "~> 0.17"
+  spec.add_runtime_dependency "progress_bar"
 
   spec.add_development_dependency 'pg'
   spec.add_development_dependency 'pry'
