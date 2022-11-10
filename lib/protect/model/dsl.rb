@@ -15,9 +15,7 @@ module Protect
           # Call Lockbox to ensure that the underlying attribute is encrypted
           has_encrypted attribute, :type => type
 
-          column_name =
-            options.delete(:searchable_attribute) ||
-              "#{attribute}_secure_search"
+          column_name = "#{attribute}_secure_search"
 
           if !ore_64_8_v1?(column_name)
             raise Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
