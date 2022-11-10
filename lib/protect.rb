@@ -27,15 +27,22 @@ module Protect
     if model.is_protected?
       bar = ProgressBar.new(model.count)
 
-      model.find_in_batches do |group|
-        group.each do |record|
-          record.attributes.each do |attr, val|
-            unless attr =~ /_ciphertext$/ || attr =~ /_secure_search$/
-              record.send("#{attr}=", val)
+      # Silence warnings is added here to suppress Lockbox warning messages relating
+      # to the presence of unencrypted plaintext fields.
+      # When running this method we are aware that there are unencrypted fields.
+      # Although this will silence all warnings, for now the improvement in UX
+      # is favoured.
+      silence_warnings do
+          model.find_in_batches do |group|
+          group.each do |record|
+            record.attributes.each do |attr, val|
+              unless attr =~ /_ciphertext$/ || attr =~ /_secure_search$/
+                record.send("#{attr}=", val)
+              end
             end
+            record.save!(validate: false)
+            bar.increment! 1
           end
-          record.save!(validate: false)
-          bar.increment! 1
         end
       end
     end
