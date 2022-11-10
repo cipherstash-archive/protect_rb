@@ -3,11 +3,13 @@ require 'active_record'
 require 'lockbox'
 require 'securerandom'
 require 'ore-rs'
+require 'progress_bar'
 
 require_relative './protect/active_record_extensions'
 require_relative './protect/database_extensions'
 require_relative './protect/logger'
 require_relative './protect/model'
+require_relative './protect/railtie' if defined?(Rails::Railtie)
 
 module Protect
   class Error < StandardError; end
@@ -18,5 +20,24 @@ module Protect
 
   def self.generate_key
     SecureRandom.hex(32)
+  end
+
+  def self.encrypt(model)
+    # TODO: Raise an error if model is not protected
+    if model.is_protected?
+      bar = ProgressBar.new(model.count)
+
+      model.find_in_batches do |group|
+        group.each do |record|
+          record.attributes.each do |attr, val|
+            unless attr =~ /_ciphertext$/ || attr =~ /_secure_search$/
+              record.send("#{attr}=", val)
+            end
+          end
+          record.save!(validate: false)
+          bar.increment! 1
+        end
+      end
+    end
   end
 end
