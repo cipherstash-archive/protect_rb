@@ -6,6 +6,9 @@ class CreateUsersTableForUniquenessTesting < ActiveRecord::Migration[(ENV["RAILS
       t.index :example_index_secure_search,
         name: "example_index_secure_search_unique",
         unique: true
+
+      t.text :example_validation_ciphertext
+      t.column :example_validation_secure_search, :ore_64_8_v1
     end
   end
 end
