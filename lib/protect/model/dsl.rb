@@ -38,17 +38,6 @@ module Protect
           attrs.has_key?(attribute)
         end
       end
-
-      included do
-        def read_attribute_for_validation(key)
-          attr = self.class.protect_search_attrs[key]
-          if attr
-            send(attr[:searchable_attribute])
-          else
-            super
-          end
-        end
-      end
     end
   end
 end
