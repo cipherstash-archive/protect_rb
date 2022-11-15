@@ -12,7 +12,7 @@ namespace :protect do
     Protect.encrypt(model)
   end
 
-  desc "Generate keys for Lockbox and protect"
+  desc "Generate local keys to use with Protect"
   task :generate_keys do
     lockbox_key = Lockbox.generate_key
     protect_key = Protect.generate_key
@@ -26,9 +26,9 @@ namespace :protect do
           cs_protect_key: '#{protect_key}'
 
       or
-      
+
       add the following environment variables:
-      
+
         LOCKBOX_MASTER_KEY=#{lockbox_key}
         CS_PROTECT_KEY=#{protect_key}
     EOF

@@ -17,7 +17,7 @@ RSpec.describe "Protect master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(Protect::Error, "Invalid CS_PROTECT_KEY. Use rake protect:generate_keys to create a key.")
+        )}.to raise_error(Protect::Error, /Invalid CS_PROTECT_KEY/)
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe "Protect master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(Protect::Error, "Invalid CS_PROTECT_KEY. Use rake protect:generate_keys to create a key.")
+        )}.to raise_error(Protect::Error, /Invalid CS_PROTECT_KEY/)
       end
     end
 
@@ -59,7 +59,7 @@ RSpec.describe "Protect master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(Protect::Error, "Invalid CS_PROTECT_KEY. Use rake protect:generate_keys to create a key.")
+        )}.to raise_error(Protect::Error, /Invalid CS_PROTECT_KEY/)
       end
     end
 
