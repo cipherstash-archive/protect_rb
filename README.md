@@ -27,6 +27,10 @@ Run:
 bundle install
 ```
 
+## Generating keys
+
+Run `rake protect:generate_keys` to generate the required local keys to use Protect and copy over to your Rails credentials file, or add as environment variables.
+
 ## Preparing your database
 
 **1. Install the Protect custom types:**
