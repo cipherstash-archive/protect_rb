@@ -35,6 +35,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pg'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency "debug", ">= 1.0.0"
+  spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "rake", "~> 11.2"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "database_cleaner"

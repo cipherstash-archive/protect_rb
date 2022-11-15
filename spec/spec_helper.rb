@@ -6,6 +6,7 @@ require "lockbox"
 require "debug"
 require "pry"
 require "database_cleaner"
+require "pry-byebug"
 
 include Protect::ActiveRecordExtensions
 
