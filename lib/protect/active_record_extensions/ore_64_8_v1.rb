@@ -60,8 +60,6 @@ module Protect
 
         cs_protect_key = rails_credentials_key || ENV["CS_PROTECT_KEY"]
 
-
-
         prf_key, prp_key = get_keys(cs_protect_key)
 
         @ore ||= begin
