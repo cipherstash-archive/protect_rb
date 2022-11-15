@@ -17,27 +17,22 @@ namespace :protect do
     lockbox_key = Lockbox.generate_key
     protect_key = Protect.generate_key
 
-    Protect::Logger.info("")
-    Protect::Logger.info("")
-    Protect::Logger.info("Add the below keys to your rails credentials file:")
-    Protect::Logger.info("")
-    Protect::Logger.info("")
-    Protect::Logger.info("lockbox:")
-    Protect::Logger.info("  master_key: '#{lockbox_key}'")
-    Protect::Logger.info("")
-    Protect::Logger.info("protect:")
-    Protect::Logger.info("  cs_protect_key: '#{protect_key}'")
-    Protect::Logger.info("")
-    Protect::Logger.info("")
-    Protect::Logger.info("or")
-    Protect::Logger.info("")
-    Protect::Logger.info("add the following environment variables:")
-    Protect::Logger.info("")
-    Protect::Logger.info("LOCKBOX_MASTER_KEY=#{lockbox_key}")
-    Protect::Logger.info("")
-    Protect::Logger.info("CS_PROTECT_KEY=#{protect_key}")
-    Protect::Logger.info("")
-    Protect::Logger.info("")
-    Protect::Logger.info("")
+    info = <<~EOF
+      Add the below keys to your rails credentials file:
+
+        lockbox:
+          master_key: '#{lockbox_key}'
+        protect:
+          cs_protect_key: '#{protect_key}'
+
+      or
+      
+      add the following environment variables:
+      
+        LOCKBOX_MASTER_KEY=#{lockbox_key}
+        CS_PROTECT_KEY=#{protect_key}
+    EOF
+
+    info.split("\n").each {|line| Protect::Logger.info(line) }
   end
 end
