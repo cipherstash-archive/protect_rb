@@ -16,5 +16,9 @@ RSpec.describe "Protect::Model Creation Validates" do
     it "a record is created if the field is not nil" do
       expect { model.create!(email: "blah@test.com") }.to_not raise_error()
     end
+
+    it "should raise an error if the field is nil" do
+      expect { model.create!(email: nil) }.to raise_error(ActiveRecord::RecordInvalid)
+    end
   end
 end
