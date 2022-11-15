@@ -52,7 +52,14 @@ module Protect
       private
 
       def self.ore
-        cs_protect_key = ENV["CS_PROTECT_KEY"]
+        rails_credentials_key = nil
+
+        if defined?(Rails.application.credentials)
+          rails_credentials_key = Rails.application.credentials.try(:protect).try(:fetch, :cs_protect_key, nil)
+        end
+
+        cs_protect_key = rails_credentials_key || ENV["CS_PROTECT_KEY"]
+
         prf_key, prp_key = get_keys(cs_protect_key)
 
         @ore ||= begin
@@ -62,7 +69,7 @@ module Protect
 
       def self.get_keys(protect_key)
         if protect_key.nil? || protect_key[/\H/] || protect_key.length != 64
-          raise Protect::Error, "Invalid CS_PROTECT_KEY. Use Protect.generate_key to create a key."
+          raise Protect::Error, "Invalid CS_PROTECT_KEY. Use rake protect:generate_keys to create a key."
         end
 
         protect_key.chars.each_slice(32).map(&:join)
