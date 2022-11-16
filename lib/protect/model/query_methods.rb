@@ -40,13 +40,9 @@ module Protect
       end
 
       def select(*fields)
-        search_attrs = protect_search_attrs
+        return super(*fields) unless is_protected?
 
-        if search_attrs.nil? || search_attrs.size == 0
-          return super(*fields)
-        end
-
-        modified_fields = protect_map_to_encrypted_attrs(search_attrs, fields)
+        modified_fields = protect_map_to_encrypted_attrs(protect_search_attrs, fields)
 
         super(*modified_fields)
       end
