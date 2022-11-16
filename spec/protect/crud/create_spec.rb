@@ -122,6 +122,16 @@ RSpec.describe Protect::Model::CRUD do
         expect(user_two.first.email_secure_search).to_not be(nil)
         expect(user_two.first.email).to eq("pt.anderson@magnolia.com")
       end
+
+      it "works for regular tables" do
+        UnsecuredTesting.insert_all!([
+          { title: "Best", counter: 5, is_true: false },
+          { title: "Blurst", counter: nil, is_true: true },
+        ])
+
+        expect(UnsecuredTesting.where(title: "Best").first.counter).to be 5
+        expect(UnsecuredTesting.where(is_true: true).first.counter).to be nil
+      end
     end
   end
 end
