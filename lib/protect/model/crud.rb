@@ -19,12 +19,12 @@ module Protect
         end
 
         def protect_map_attributes(records)
-          return records unless records.is_a?(Array)
+          unless records.is_a?(Array) && self.respond_to?(:lockbox_attributes)
+            return records
+          end
 
           records.map do |attributes|
-            lockbox_attributes = self.lockbox_attributes
-
-            lockbox_attributes.map do | key, hash|
+            lockbox_attributes.map do |key, hash|
               virtual_attribute = hash[:attribute].to_sym
               if protect_search_attrs[virtual_attribute]
 
