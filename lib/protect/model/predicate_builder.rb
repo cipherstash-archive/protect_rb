@@ -6,9 +6,12 @@ module Protect
       # Updates the attribute to the searchable attribute field (e.g email_secure_search)
       # and ORE encrypts the value.
       def build(attribute, value, *args)
-        search_attrs = table.send(:klass).protect_search_attrs
-        if search_attrs && !value.is_a?(ActiveRecord::StatementCache::Substitute)
-          search_attr = search_attrs[attribute.name.to_sym]&.fetch(:searchable_attribute)
+        klass = table.send(:klass)
+        if klass \
+          && klass.is_protected? \
+          && !value.is_a?(ActiveRecord::StatementCache::Substitute)
+        then
+          search_attr = klass.protect_search_attrs[attribute.name.to_sym]&.fetch(:searchable_attribute)
 
           if search_attr
             attribute = attribute.relation[search_attr]
@@ -20,6 +23,7 @@ module Protect
             end
           end
         end
+
         super(attribute, value, *args)
       end
 
