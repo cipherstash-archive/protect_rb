@@ -11,7 +11,6 @@ module Protect
         if search_attrs.nil?
           return super(*args)
         end
-
         updated_args =
           args.map do |arg|
             case arg
@@ -41,15 +40,11 @@ module Protect
       end
 
       def select(*fields)
-        search_attrs = protect_search_attrs
+        return super(*fields) unless is_protected?
 
-        if search_attrs.nil?
-          return super(*fields)
-        end
+        modified_fields = protect_map_to_encrypted_attrs(protect_search_attrs, fields)
 
-        modified_fields = protect_map_to_encrypted_attrs(search_attrs, fields)
-
-        super(modified_fields)
+        super(*modified_fields)
       end
 
       def protect_map_to_encrypted_attrs(search_attrs, attrs)
