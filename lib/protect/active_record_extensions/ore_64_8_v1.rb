@@ -42,7 +42,11 @@ module Protect
       attr_reader :ciphertext
 
       def self.encrypt(term)
-        new(ore.encrypt(term))
+        if term.nil?
+          nil
+        else
+          new(ore.encrypt(term))
+        end
       end
 
       def initialize(ciphertext)
