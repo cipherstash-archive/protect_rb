@@ -196,6 +196,16 @@ RSpec.describe Protect::Model::CRUD do
           expect(returned_user.length).to eq(0)
         end
       end
+
+      context "when querying using where and or" do
+        it "returns record" do
+          user_via_or = CrudTesting.where(age: 72).or(CrudTesting.where(age: 75)).order(age: :asc)
+
+          expect(user_via_or.length).to eq(2)
+          expect(user_via_or.first.email).to eq("steve.zissou@belafonte.com")
+          expect(user_via_or.last.email).to eq("kingsley.zissou@belafonte.com")
+        end
+      end
     end
 
     describe "range queries" do
