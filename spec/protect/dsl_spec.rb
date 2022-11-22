@@ -26,6 +26,32 @@ RSpec.describe Protect::Model::DSL do
           model.secure_search :full_name
         }.to_not raise_error
       end
+
+      context "when a secure_search attribute does not exist", :focus do
+        it "raises an error if there are no pending migrations" do
+          expect {
+            Class.new(ActiveRecord::Base) do
+              self.table_name = DslTesting.table_name
+              secure_search :unicorn, type: :string
+            end
+          }.to raise_error(Protect::Error, "Column name 'unicorn_secure_search' does not exist")
+        end
+
+        it "silently logs if there are pending migrations" do
+          allow_any_instance_of(ActiveRecord::MigrationContext).to(
+            receive(:needs_migration?).and_return(true)
+          )
+
+          logger = Logger.new(IO::NULL)
+          expect(logger).to receive(:debug).with(/Protect cannot find column 'unicorn_secure_search' on '[^']+'/)
+          ActiveRecord::Base.logger = logger
+
+          Class.new(ActiveRecord::Base) do
+            self.table_name = DslTesting.table_name
+            secure_search :unicorn, type: :string
+          end
+        end
+      end
     end
   end
 end
