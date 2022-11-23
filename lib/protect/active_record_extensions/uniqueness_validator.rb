@@ -2,6 +2,8 @@ module Protect
   module ActiveRecordExtensions
     module UniquenessValidator
       def validate_each(record, attribute, value)
+        return super(record, attribute, value) unless record.class.method_defined?(:protect_search_attrs)
+
         protect_attr = record.class.protect_search_attrs[attribute.to_sym]
         if protect_attr
           virt_attr_val = record.read_attribute_for_validation(protect_attr[:lockbox_attribute][:attribute])
@@ -13,6 +15,8 @@ module Protect
       # Change the attribute name here instead of in validate_each above for a
       # better error message
       def build_relation(klass, attribute, value)
+        return super(klass, attribute, value) unless klass.method_defined?(:protect_search_attrs)
+
         protect_attr = klass.protect_search_attrs[attribute.to_sym]
         if protect_attr
           attribute = protect_attr[:searchable_attribute]

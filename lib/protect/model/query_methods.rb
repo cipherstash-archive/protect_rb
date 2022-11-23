@@ -40,7 +40,7 @@ module Protect
       end
 
       def select(*fields)
-        return super(*fields) unless is_protected?
+        return super(*fields) unless method_defined?(:is_protected?) && is_protected?
 
         modified_fields = protect_map_to_encrypted_attrs(protect_search_attrs, fields)
 
