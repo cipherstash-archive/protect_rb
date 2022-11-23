@@ -6,6 +6,8 @@ module Protect
       # Args are an array of Symbols for default ordering and a Hash for fields noted with a direction.
       # [:age_plaintext, {:last_login=>:asc, :email=>:asc}]
       def order(*args)
+        return super(*args) unless method_defined?(:protect_search_attrs)
+
         search_attrs = protect_search_attrs
 
         if search_attrs.nil?
