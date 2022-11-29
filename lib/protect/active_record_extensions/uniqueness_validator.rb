@@ -2,7 +2,7 @@ module Protect
   module ActiveRecordExtensions
     module UniquenessValidator
       def validate_each(record, attribute, value)
-        return super(record, attribute, value) unless record.class.method_defined?(:protect_search_attrs)
+        return super(record, attribute, value) unless record.class.respond_to?(:protect_search_attrs)
 
         protect_attr = record.class.protect_search_attrs[attribute.to_sym]
         if protect_attr
@@ -15,7 +15,7 @@ module Protect
       # Change the attribute name here instead of in validate_each above for a
       # better error message
       def build_relation(klass, attribute, value)
-        return super(klass, attribute, value) unless klass.method_defined?(:protect_search_attrs)
+        return super(klass, attribute, value) unless klass.respond_to?(:protect_search_attrs)
 
         protect_attr = klass.protect_search_attrs[attribute.to_sym]
         if protect_attr
