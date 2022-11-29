@@ -9,4 +9,3 @@ module Protect
     end
   end
 end
-

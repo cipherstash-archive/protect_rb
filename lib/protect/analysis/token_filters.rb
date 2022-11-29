@@ -15,7 +15,7 @@ module Protect
 
       class NGram < Base
         def perform(str_or_array)
-          token_length = @opts["tokenLength"] || 3
+          token_length = @opts["tokenLength"]
           Array(str_or_array).flat_map do |token|
             [].tap do |out|
               (token.length - token_length + 1).times do |i|

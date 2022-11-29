@@ -1,7 +1,7 @@
 require_relative "./token_filters"
 require_relative "./tokenizer"
 
-# Copied over from the Ruby Client
+# Implementation copied over from the Ruby Client
 # https://github.com/cipherstash/ruby-client/blob/main/lib/cipherstash/analysis/text_processor.rb
 module Protect
   module Analysis
@@ -15,7 +15,7 @@ module Protect
       #
       # ## Example
       #
-      # Processor.new({
+      # TextProcessor.new({
       #   "tokenFilters"=>[
       #     {"kind"=>"downcase"},
       #     {"kind"=>"ngram", "tokenLength"=>3}
@@ -42,25 +42,30 @@ module Protect
 
       private
       def build_token_filters(array)
+        raise Protect::Error, "No token filters provided." unless array && array.length > 0
         array.map do |obj|
           case obj["kind"]
           when "downcase"
             TokenFilters::Downcase.new(obj)
 
           when "ngram"
+            raise Protect::Error, "Token length not provided. Please specify token length using '{'kind'=>'ngram', 'tokenLength'=>3}'" unless obj["tokenLength"]
+
             TokenFilters::NGram.new(obj)
 
           else
-            raise "Unknown token filter: '#{obj['kind']}'"
+            raise Protect::Error, "Unknown token filter: '#{obj['kind']}'"
           end
         end
       end
 
       def build_tokenizer(obj)
+        raise Protect::Error, "No tokenizer provided. Use 'tokenizer'=>{'kind'=>'standard'} in your settings." unless obj
+
         if obj["kind"] == "standard"
           Tokenizer::Standard.new
         else
-          raise "Unknown tokenizer: '#{obj['kind']}'"
+          raise Protect::Error, "Unknown tokenizer: '#{obj['kind']}'. Use 'tokenizer'=>{'kind'=>'standard'} in your settings."
         end
       end
     end
