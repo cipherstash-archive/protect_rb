@@ -27,7 +27,7 @@ RSpec.describe Protect::Model::DSL do
         }.to_not raise_error
       end
 
-      context "when a secure_search attribute does not exist", :focus do
+      context "when a secure_search attribute does not exist" do
         it "raises an error if there are no pending migrations" do
           expect {
             Class.new(ActiveRecord::Base) do
