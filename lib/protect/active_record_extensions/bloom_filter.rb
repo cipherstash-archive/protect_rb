@@ -2,16 +2,12 @@ require "openssl"
 
 module Protect
   module ActiveRecordExtensions
-    # A bloom filter implementation designed to be used with the *FilterMatch index classes.
-    #
-    # @private
+    # A bloom filter implementation designed to be used with *secure_text_search fields
     class BloomFilter
       K_MIN = 3
       K_MAX = 16
-      K_DEFAULT = 3
       M_MIN = 32
       M_MAX = 65536
-      M_DEFAULT = 256
 
       # The "set" bits of the bloom filter
       attr_reader :bits
@@ -56,15 +52,15 @@ module Protect
 
         @bits = Set.new()
 
-        @m = opts.fetch("filterSize", M_DEFAULT)
+        @m = opts.fetch("filterSize", nil)
 
         unless valid_m?(@m)
           raise Protect::Error, "filterSize must be a power of 2 between 32 and 65536 (got #{@m.inspect})"
         end
 
-        @k = opts.fetch("filterTermBits", K_DEFAULT)
+        @k = opts.fetch("filterTermBits", nil)
 
-        unless (K_MIN..K_MAX).to_a.include?(@k)
+        unless @k && (K_MIN..K_MAX).to_a.include?(@k)
           raise Protect::Error, "filterTermBits must be an integer between 3 and 16 (got #{@k.inspect})"
         end
       end
