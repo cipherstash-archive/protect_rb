@@ -1,14 +1,10 @@
 require "openssl"
+require_relative "./bloom_filter_validations"
 
 module Protect
   module ActiveRecordExtensions
     # A bloom filter implementation designed to be used with *secure_text_search fields
     class BloomFilter
-      K_MIN = 3
-      K_MAX = 16
-      M_MIN = 32
-      M_MAX = 65536
-
       # The "set" bits of the bloom filter
       attr_reader :bits
 
@@ -40,7 +36,7 @@ module Protect
       #
       # @raise [Protect::Error] if opts not provided, or invalid filter_size or filter_term_bits.
       def initialize(key, **opts)
-        unless opts.size > 1 && valid_filter_options?(opts)
+        unless opts.size > 1 && BloomFilterValidations.valid_filter_options?(opts)
           raise Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits."
         end
 
@@ -58,13 +54,13 @@ module Protect
 
         @m = opts.fetch(:filter_size)
 
-        unless valid_m?(@m)
+        unless BloomFilterValidations.valid_m?(@m)
           raise Protect::Error, "filter_size must be a power of 2 between 32 and 65536 (got #{@m.inspect})"
         end
 
         @k = opts.fetch(:filter_term_bits)
 
-        unless @k && (K_MIN..K_MAX).to_a.include?(@k)
+        unless BloomFilterValidations.valid_k?(@k)
           raise Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got #{@k.inspect})"
         end
       end
@@ -117,18 +113,6 @@ module Protect
 
       def hex_string?(val)
         val.instance_of?(String) and /\A\h*\z/.match?(val)
-      end
-
-      def power_of_2?(m)
-        Math.log2(m).floor == Math.log2(m)
-      end
-
-      def valid_m?(m)
-        m.instance_of?(Integer) && M_MIN <= m && m <= M_MAX && power_of_2?(m)
-      end
-
-      def valid_filter_options?(opts)
-        opts.has_key?(:filter_size) && opts.has_key?(:filter_term_bits)
       end
     end
   end
