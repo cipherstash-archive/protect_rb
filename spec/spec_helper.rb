@@ -13,6 +13,8 @@ include Protect::ActiveRecordExtensions
 ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
 ENV["CS_PROTECT_KEY"] = Protect.generate_key
 
+RAILS_VERSION = "#{ActiveRecord::VERSION::MAJOR}.#{ActiveRecord::VERSION::MINOR}".to_f
+
 def establish_connection(**attrs)
   ActiveRecord::Base.establish_connection(
     {

@@ -1,6 +1,6 @@
 RSpec.describe "A Protect customer can run migrations to define searchable columns", :type => :extensions_test do
   let(:migration) {
-    class AcmeCorpUser < ActiveRecord::Migration[7.0]
+    class AcmeCorpUser < ActiveRecord::Migration[RAILS_VERSION]
       def change
         create_table :acme_corp_users do |t|
           t.column :email_secure_search, :ore_64_8_v1

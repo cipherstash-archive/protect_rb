@@ -1,4 +1,4 @@
-class CreateUsersTableForDslTesting < ActiveRecord::Migration[7.0]
+class CreateUsersTableForDslTesting < ActiveRecord::Migration[RAILS_VERSION]
   def change
     create_table :users_for_dsl_testing do |t|
       t.text :email_ciphertext

@@ -1,0 +1,46 @@
+---
+name: "Protect: Tests"
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  run-specs:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rails-version:
+          - "6"
+          - "6.1"
+          - "7"
+        ruby-version:
+          - "2.7"
+          - "3.1"
+    env:
+      BUNDLE_GEMFILE: gemfiles/Gemfile.rails-${{ matrix.rails-version }}
+      RSPEC_FULL_BACKTRACE: yes
+      RAILS_VERSION: ${{ matrix.rails-version }}
+      PROTECT_UNIQUE_JOB_ID: run_${{ github.run_number }}.${{ github.run_attempt }}_job_${{ github.job }}_index_${{ strategy.job-index }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      # PR for putting this change back into the original repo: https://github.com/ankane/setup-postgres/pull/9
+      - uses: damncabbage/setup-postgres@rh/allow-multiple-databases
+        with:
+          database: |
+            protect_test
+            protect_test_alt
+
+      - name: "Show unique job ID"
+        run: echo ${{ env.PROTECT_UNIQUE_JOB_ID }}
+
+      - name: Run the tests
+        run: bundle exec rake spec
