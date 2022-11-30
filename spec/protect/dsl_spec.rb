@@ -53,5 +53,55 @@ RSpec.describe Protect::Model::DSL do
         end
       end
     end
+
+    context "secure_text_search" do
+      let(:model) {
+        Class.new(ActiveRecord::Base) do
+          self.table_name = DslTesting.table_name
+        end
+      }
+
+      let(:model_text_search) {
+        Class.new(ActiveRecord::Base) do
+          self.table_name = DslTesting.table_name
+
+          secure_text_search :full_name
+        end
+      }
+
+      it "raises an error when secure_text_search has already been specified for an attribute" do
+        expect {
+          model_text_search.secure_text_search :full_name
+        }.to raise_error(Protect::Error, "Attribute 'full_name' is already specified as a secure text search attribute.")
+      end
+
+      it "raises an error when secure_text_search is specified on a non text attribute" do
+        expect {
+          model.secure_text_search :dob, type: :date
+        }.to raise_error(Protect::Error, "Attribute 'dob' is not a valid type. Attribute must be of type 'string' or 'text'.")
+      end
+
+      it "raises an error when secure_text_search attribute is not of type array small int" do
+        expect {
+          model.secure_text_search :email
+        }.to raise_error(Protect::Error, "Column name 'email_secure_text_search' is not of type :tbc(in secure__text_search :email)")
+      end
+
+      it "raises an error when bloom filter and tokenization settings are not provided" do
+      end
+
+      it "checks if underlying attribute is already lockbox encrypted" do
+      end
+
+      it "allows for secure_text_search to be specified on a text attribute" do
+      end
+    end
   end
 end
+
+# Tests;
+# What if secure_search is specified already, then lockbox has_encrypted
+# would have been called.
+# vice versas, if secure_text_search is specified already, then lockbox
+# has_encrypted has been called.
+# add additional model/s to test this.
