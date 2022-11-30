@@ -16,16 +16,16 @@ module Protect
       # ## Example
       #
       # TextProcessor.new({
-      #   "tokenFilters"=>[
-      #     {"kind"=>"downcase"},
-      #     {"kind"=>"ngram", "tokenLength"=>3}
+      #   token_filters: [
+      #     {kind: "downcase"},
+      #     {kind: "ngram", token_length: 3}
       #   ],
-      #   "tokenizer"=>{"kind"=>"standard"}
+      #   tokenizer: {kind: "standard"}
       # })
       #
       def initialize(settings)
-        @token_filters = build_token_filters(settings["tokenFilters"])
-        @tokenizer = build_tokenizer(settings["tokenizer"])
+        @token_filters = build_token_filters(settings[:token_filters])
+        @tokenizer = build_tokenizer(settings[:tokenizer])
       end
 
       # Processes the given str and returns an array of tokens (the "Vector")
@@ -44,28 +44,28 @@ module Protect
       def build_token_filters(array)
         raise Protect::Error, "No token filters provided." unless array && array.length > 0
         array.map do |obj|
-          case obj["kind"]
+          case obj[:kind]
           when "downcase"
             TokenFilters::Downcase.new(obj)
 
           when "ngram"
-            raise Protect::Error, "Token length not provided. Please specify token length using '{'kind'=>'ngram', 'tokenLength'=>3}'" unless obj["tokenLength"]
+            raise Protect::Error, "Token length not provided. Please specify token length using '{kind: 'ngram', tokenLength: 3}'" unless obj[:token_length]
 
             TokenFilters::NGram.new(obj)
 
           else
-            raise Protect::Error, "Unknown token filter: '#{obj['kind']}'"
+            raise Protect::Error, "Unknown token filter: '#{obj[:kind]}'"
           end
         end
       end
 
       def build_tokenizer(obj)
-        raise Protect::Error, "No tokenizer provided. Use 'tokenizer'=>{'kind'=>'standard'} in your settings." unless obj
+        raise Protect::Error, "No tokenizer provided. Use tokenizer: {kind: 'standard'} in your settings." unless obj
 
-        if obj["kind"] == "standard"
+        if obj[:kind] == "standard"
           Tokenizer::Standard.new
         else
-          raise Protect::Error, "Unknown tokenizer: '#{obj['kind']}'. Use 'tokenizer'=>{'kind'=>'standard'} in your settings."
+          raise Protect::Error, "Unknown tokenizer: '#{obj[:kind]}'. Use tokenizer: {kind: 'standard'} in your settings."
         end
       end
     end
