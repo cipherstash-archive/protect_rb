@@ -9,15 +9,15 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
   let(:key) { "b6d6dba3be33ffaabb83af611ec043b9270dacdc7b3015ce2c36ba17cf2d3b2c" }
 
   describe ".new" do
-    it "raises an error if filterSize not provided" do
+    it "raises an error if filter_size not provided" do
       expect {
         described_class.new(key)
-      }.to raise_error(Protect::Error, "filterSize must be a power of 2 between 32 and 65536 (got nil)")
+      }.to raise_error(Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits.")
     end
 
     self::VALID_M_VALUES.each do |m|
       it "allows #{m} as a value for m" do
-        filter = described_class.new(key, {"filterSize" => m, "filterTermBits" => 3})
+        filter = described_class.new(key, {filter_size:  m, filter_term_bits:  3})
         expect(filter.m).to eq(m)
       end
     end
@@ -25,41 +25,41 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
     [0, 2, 16, 31, 513, 131072, "256", "ohai", nil, { foo: "bar" }, Object.new].each do |m|
       it "raises given invalid m of #{m.inspect}" do
         expect {
-          described_class.new(key, {"filterSize" => m, "filterTermBits" => 3})
-        }.to raise_error(Protect::Error, "filterSize must be a power of 2 between 32 and 65536 (got #{m.inspect})")
+          described_class.new(key, {filter_size:  m, filter_term_bits:  3})
+        }.to raise_error(Protect::Error, "filter_size must be a power of 2 between 32 and 65536 (got #{m.inspect})")
       end
     end
 
-    it "raises an error if filterTermBits not provided" do
+    it "raises an error if filter_term_bits not provided" do
       expect {
-        described_class.new(key, {"filterSize" => 256})
-      }.to raise_error(Protect::Error, "filterTermBits must be an integer between 3 and 16 (got nil)")
+        described_class.new(key, {filter_size:  256})
+      }.to raise_error(Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits.")
     end
 
     self::VALID_K_VALUES.each do |k|
       it "allows #{k} as a value for k" do
-        filter = described_class.new(key, {"filterTermBits" => k, "filterSize" => 256})
+        filter = described_class.new(key, {filter_term_bits:  k, filter_size:  256})
         expect(filter.k).to eq(k)
       end
     end
 
     it "raises when k is < 3" do
       expect {
-        described_class.new(key, {"filterTermBits" => 2, "filterSize" => 256})
-      }.to raise_error(Protect::Error, "filterTermBits must be an integer between 3 and 16 (got 2)")
+        described_class.new(key, {filter_term_bits:  2, filter_size:  256})
+      }.to raise_error(Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got 2)")
     end
 
     it "raises when k is > 16" do
       expect {
-        described_class.new(key, {"filterTermBits" => 17, "filterSize" => 256})
-      }.to raise_error(Protect::Error, "filterTermBits must be an integer between 3 and 16 (got 17)")
+        described_class.new(key, {filter_term_bits:  17, filter_size:  256})
+      }.to raise_error(Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got 17)")
     end
 
     [3.5, "4", "ohai", nil, { foo: "bar" }, Object.new].each do |k|
       it "raises given invalid value of k #{k}" do
         expect {
-          described_class.new(key, {"filterTermBits" => k, "filterSize" => 256})
-        }.to raise_error(Protect::Error, "filterTermBits must be an integer between 3 and 16 (got #{k.inspect})")
+          described_class.new(key, {filter_term_bits:  k, filter_size:  256})
+        }.to raise_error(Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got #{k.inspect})")
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
       key = SecureRandom.hex(16)
 
       expect {
-        described_class.new(key, {"filterTermBits" => 16, "filterSize" => 256})
+        described_class.new(key, {filter_term_bits:  16, filter_size:  256})
       }.to raise_error(Protect::Error, "expected bloom filter key to have length=32, got length=16")
     end
 
@@ -75,7 +75,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
       key = ""
 
       expect {
-        described_class.new(key, {"filterTermBits" => 16, "filterSize" => 256})
+        described_class.new(key, {filter_term_bits:  16, filter_size:  256})
       }.to raise_error(Protect::Error, "expected bloom filter key to have length=32, got length=0")
     end
 
@@ -83,14 +83,14 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
       key = "ZZZ"
 
       expect {
-        described_class.new(key, {"filterTermBits" => 16, "filterSize" => 256})
+        described_class.new(key, {filter_term_bits:  16, filter_size:  256})
       }.to raise_error(Protect::Error, 'expected bloom filter key to be a hex-encoded string (got "ZZZ")')
     end
 
     [3.5, 4, nil, { foo: "bar" }, Object.new].each do |key|
       it "raises given invalid key #{key.inspect}" do
         expect {
-          described_class.new(key, {"filterTermBits" => 16, "filterSize" => 256})
+          described_class.new(key, {filter_term_bits:  16, filter_size:  256})
         }.to raise_error(Protect::Error, "expected bloom filter key to be a hex-encoded string (got #{key.inspect})")
       end
     end
@@ -98,8 +98,8 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
   describe "#add" do
     it "accepts a single term or a list of terms" do
-      filter_a = described_class.new(key, {"filterTermBits" => 16, "filterSize" => 256})
-      filter_b = described_class.new(key, {"filterTermBits" => 16, "filterSize" => 256})
+      filter_a = described_class.new(key, {filter_term_bits:  16, filter_size:  256})
+      filter_b = described_class.new(key, {filter_term_bits:  16, filter_size:  256})
 
       filter_a.add("abc")
       filter_b.add(["abc"])
@@ -111,7 +111,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
     # In practice there will be 1 to k entries. Less than k entries will be in the set
     # in the case that any of the first k slices of the HMAC have the same value.
     it "adds k entries to bits for a single term when there are no hash collisions" do
-      filter = described_class.new(key, {"filterTermBits" => 3, "filterSize" => 256})
+      filter = described_class.new(key, {filter_term_bits:  3, filter_size:  256})
       # A term that's known to not have collisions in the first k slices for the test key
       filter.add("yes")
 
@@ -120,7 +120,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
     self::VALID_K_VALUES.each do |k|
       it "adds at most #{k} entries to bits for a single term when k=#{k}" do
-        filter = described_class.new(key, {"filterTermBits" => k, "filterSize" => 256})
+        filter = described_class.new(key, {filter_term_bits:  k, filter_size:  256})
         random_term = SecureRandom.base64(3)
 
         filter.add(random_term)
@@ -133,7 +133,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
     self::VALID_M_VALUES.each do |m|
       it "adds bit positions with values >= 0 and < #{m} when m=#{m}" do
-        filter = described_class.new(key, {"filterSize" => m, "filterTermBits" => 3})
+        filter = described_class.new(key, {filter_size:  m, filter_term_bits:  3})
         random_term = SecureRandom.base64(3)
 
         filter.add(random_term)
@@ -146,7 +146,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
     end
 
     it "returns the bloom filter instance" do
-      filter = described_class.new(key, {"filterSize" => 256, "filterTermBits" => 3})
+      filter = described_class.new(key, {filter_size:  256, filter_term_bits:  3})
 
       result = filter.add("yes")
 
@@ -156,8 +156,8 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
   describe "#subset?" do
     it "returns true when the other filter is a subset" do
-      filter_a = described_class.new(key, {"filterSize" => 256, "filterTermBits" => 3})
-      filter_b = described_class.new(key, {"filterSize" => 256, "filterTermBits" => 3})
+      filter_a = described_class.new(key, {filter_size:  256, filter_term_bits:  3})
+      filter_b = described_class.new(key, {filter_size:  256, filter_term_bits:  3})
 
       filter_a.add("yes")
       filter_b.add("yes")
@@ -166,8 +166,8 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
     end
 
     it "returns false when the other filter is not a subset" do
-      filter_a = described_class.new(key, {"filterSize" => 256, "filterTermBits" => 3})
-      filter_b = described_class.new(key, {"filterSize" => 256, "filterTermBits" => 3})
+      filter_a = described_class.new(key, {filter_size:  256, filter_term_bits:  3})
+      filter_b = described_class.new(key, {filter_size:  256, filter_term_bits:  3})
 
       filter_a.add("yes")
       filter_b.add("ner")
@@ -179,10 +179,10 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
       .product(self::VALID_K_VALUES)
       .each do |m, k|
         it "works for m=#{m} and k=#{k}" do
-          filter_a = described_class.new(key, {"filterSize" => m, "filterTermBits" => k})
-          filter_b = described_class.new(key, {"filterSize" => m, "filterTermBits" => k})
-          filter_c = described_class.new(key, {"filterSize" => m, "filterTermBits" => k})
-          filter_d = described_class.new(key, {"filterSize" => m, "filterTermBits" => k})
+          filter_a = described_class.new(key, {filter_size:  m, filter_term_bits:  k})
+          filter_b = described_class.new(key, {filter_size:  m, filter_term_bits:  k})
+          filter_c = described_class.new(key, {filter_size:  m, filter_term_bits:  k})
+          filter_d = described_class.new(key, {filter_size:  m, filter_term_bits:  k})
 
           filter_a.add(%w(a b c))
 
@@ -204,7 +204,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
   describe "#to_a" do
     it "returns bits as an array" do
-      filter = described_class.new(key, {"filterSize" => 256, "filterTermBits" => 3}).add("a")
+      filter = described_class.new(key, {filter_size:  256, filter_term_bits:  3}).add("a")
 
       expect(filter.to_a).to be_instance_of(Array)
       expect(Set.new(filter.to_a)).to eq(filter.bits)
