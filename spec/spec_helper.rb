@@ -30,6 +30,25 @@ RSpec.configure do |config|
   config.full_backtrace = ENV.key?("RSPEC_FULL_BACKTRACE")
   config.run_all_when_everything_filtered = true
 
+  if ENV.has_key?('CI')
+    # Yell if we're filtering in CI, eg. we've filtered on ':focus' somewhere by accident.
+    config.before(:suite) do
+      run_examples = RSpec.world.example_count
+      all_examples = RSpec.world.all_examples.count
+      if run_examples != all_examples
+        paths = RSpec.world.filtered_examples.flat_map(&:second).map(&:file_path).uniq.sort
+        msg = <<~EOF
+          Examples have been filtered; you're only running #{run_examples} out of #{all_examples} examples.
+
+          You may have left a filter (eg. :focus) in one of your *_spec.rb
+          files; is it one of these?
+          #{paths.map { |p| "- #{p}" }.join("\n")}
+        EOF
+        raise msg
+      end
+    end
+  end
+
   config.backtrace_inclusion_patterns = [
     /\/lib\/protect/,
     /\/spec\/protect/,
