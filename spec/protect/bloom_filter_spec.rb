@@ -1,5 +1,3 @@
-# require_relative "../../spec_helper"
-
 require "protect/active_record_extensions/bloom_filter"
 
 RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
@@ -114,7 +112,6 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
     # in the case that any of the first k slices of the HMAC have the same value.
     it "adds k entries to bits for a single term when there are no hash collisions" do
       filter = described_class.new(key, {"filterTermBits" => 3, "filterSize" => 256})
-      # binding.pry
       # A term that's known to not have collisions in the first k slices for the test key
       filter.add("yes")
 
