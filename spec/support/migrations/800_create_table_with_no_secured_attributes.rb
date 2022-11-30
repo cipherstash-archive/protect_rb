@@ -1,4 +1,4 @@
-class CreateTableWithNoSecuredAttributes < ActiveRecord::Migration[(ENV["RAILS_VERSION"] || "7.0").to_f]
+class CreateTableWithNoSecuredAttributes < ActiveRecord::Migration[RAILS_VERSION]
   def change
     create_table :table_with_no_secured_attributes do |t|
       t.text :title

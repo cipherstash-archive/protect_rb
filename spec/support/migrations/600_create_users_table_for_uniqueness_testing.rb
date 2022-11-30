@@ -1,4 +1,4 @@
-class CreateUsersTableForUniquenessTesting < ActiveRecord::Migration[(ENV["RAILS_VERSION"] || "7.0").to_f]
+class CreateUsersTableForUniquenessTesting < ActiveRecord::Migration[RAILS_VERSION]
   def change
     create_table :users_for_uniqueness_testing do |t|
       t.text :example_index_ciphertext

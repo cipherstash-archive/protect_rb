@@ -1,4 +1,4 @@
-class CreateUsersTableForCrudTesting < ActiveRecord::Migration[(ENV["RAILS_VERSION"] || "7.0").to_f]
+class CreateUsersTableForCrudTesting < ActiveRecord::Migration[RAILS_VERSION]
   def change
     create_table :users_for_crud_testing do |t|
       t.text :email_ciphertext

@@ -1,4 +1,4 @@
-class CreateMigrationUsersTable < ActiveRecord::Migration[(ENV["RAILS_VERSION"] || "7.0").to_f]
+class CreateMigrationUsersTable < ActiveRecord::Migration[RAILS_VERSION]
   def change
     create_table :migration_users do |t|
       t.text :email

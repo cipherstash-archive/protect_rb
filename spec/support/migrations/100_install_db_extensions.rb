@@ -1,4 +1,4 @@
-class InstallDbExtensions < ActiveRecord::Migration[(ENV["RAILS_VERSION"] || "7.0").to_f]
+class InstallDbExtensions < ActiveRecord::Migration[RAILS_VERSION]
   def up
     Protect::DatabaseExtensions.install rescue nil
   end

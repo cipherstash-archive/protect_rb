@@ -62,36 +62,38 @@ RSpec.describe Protect::Model::CRUD do
       end
     end
 
-    context "when using #update!" do
-      it "updates the ore and lockbox encrypted values in a single record" do
-        user_one = CrudTesting.create!(
-          dob: Date.new(1969,5,1),
-          last_login: DateTime.new(2022,10,14),
-          age: 53,
-          verified: true,
-          latitude: 150.634496,
-          email: "wes.anderson@rushmore.com"
-        )
+    if RAILS_VERSION >= 7
+      context "when using #update!" do
+        it "updates the ore and lockbox encrypted values in a single record" do
+          user_one = CrudTesting.create!(
+            dob: Date.new(1969,5,1),
+            last_login: DateTime.new(2022,10,14),
+            age: 53,
+            verified: true,
+            latitude: 150.634496,
+            email: "wes.anderson@rushmore.com"
+          )
 
-        CrudTesting.update!(user_one.id, verified: false, email: "wes@anderson.com")
+          CrudTesting.update!(user_one.id, verified: false, email: "wes@anderson.com")
 
-        # Query using updated values.
-        updated_user = CrudTesting.where(
-          email_secure_search: ORE_64_8_V1.encrypt("wes@anderson.com"),
-          verified_secure_search: ORE_64_8_V1.encrypt(false)
-        )
+          # Query using updated values.
+          updated_user = CrudTesting.where(
+            email_secure_search: ORE_64_8_V1.encrypt("wes@anderson.com"),
+            verified_secure_search: ORE_64_8_V1.encrypt(false)
+          )
 
-        # Check that updated values are in DB.
-        expect(updated_user.length).to eq(1)
-        expect(updated_user.first.id).to eq(user_one.id)
-        expect(updated_user.first.email).to eq("wes@anderson.com")
-        expect(updated_user.first.verified).to eq(false)
+          # Check that updated values are in DB.
+          expect(updated_user.length).to eq(1)
+          expect(updated_user.first.id).to eq(user_one.id)
+          expect(updated_user.first.email).to eq("wes@anderson.com")
+          expect(updated_user.first.verified).to eq(false)
 
-        # Check existing values remain unchanged.
-        expect(updated_user.first.last_login).to eq(user_one.last_login)
-        expect(updated_user.first.dob).to eq(user_one.dob)
-        expect(updated_user.first.age).to eq(user_one.age)
-        expect(updated_user.first.latitude).to eq(user_one.latitude)
+          # Check existing values remain unchanged.
+          expect(updated_user.first.last_login).to eq(user_one.last_login)
+          expect(updated_user.first.dob).to eq(user_one.dob)
+          expect(updated_user.first.age).to eq(user_one.age)
+          expect(updated_user.first.latitude).to eq(user_one.latitude)
+        end
       end
     end
 
