@@ -81,19 +81,25 @@ RSpec.describe Protect::Model::DSL do
         }.to raise_error(Protect::Error, "Attribute 'dob' is not a valid type. Attribute must be of type 'string' or 'text'.")
       end
 
-      it "raises an error when secure_text_search attribute is not of type array small int" do
+      it "raises an error when secure_text_search attribute is not db data type 'smallint[]'" do
         expect {
           model.secure_text_search :email
-        }.to raise_error(Protect::Error, "Column name 'email_secure_text_search' is not of type :tbc(in secure__text_search :email)")
+        }.to raise_error(Protect::Error, "Column name 'email_secure_text_search' is not of type 'smallint[]' (in secure_text_search :email)")
       end
 
-      it "raises an error when bloom filter and tokenization settings are not provided" do
+      xit "raises an error when no bloom filter or tokenization settings are provided" do
       end
 
-      it "checks if underlying attribute is already lockbox encrypted" do
+      xit "raises an error when no bloom filter settings are provided" do
       end
 
-      it "allows for secure_text_search to be specified on a text attribute" do
+      xit "raises an error when no tokenization settings settings are provided" do
+      end
+
+      xit "checks if underlying attribute is already lockbox encrypted" do
+      end
+
+      xit "allows for secure_text_search to be specified on a text attribute" do
       end
     end
   end
