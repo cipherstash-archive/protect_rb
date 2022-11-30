@@ -8,7 +8,6 @@ module Protect
       def build(attribute, value, *args)
         klass = table.send(:klass)
         if klass \
-          && klass.respond_to?(:is_protected?) \
           && klass.is_protected? \
           && !value.is_a?(ActiveRecord::StatementCache::Substitute)
         then
