@@ -123,9 +123,9 @@ module Protect
         end
 
         def text_analysis_settings?(options)
-          valid_keys = options.has_key?(:tokenizer) && options.has_key?(:token_filters)
-          valid_tokenizer = Protect::Analysis::TokenValidations.valid_tokenizer?(options[:tokenizer])
-          valid_token_filters = options[:token_filters].kind_of?(Array) && Protect::Analysis::TokenValidations.valid_token_filters?(options[:token_filters])
+          valid_keys = Protect::Analysis::TokenValidations.valid_keys?(options)
+          valid_tokenizer = Protect::Analysis::TokenValidations.valid_tokenizer?(options)
+          valid_token_filters = Protect::Analysis::TokenValidations.valid_token_filters?(options)
 
           valid_keys && valid_tokenizer && valid_token_filters
         end
