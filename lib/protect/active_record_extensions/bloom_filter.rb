@@ -5,6 +5,13 @@ module Protect
   module ActiveRecordExtensions
     # A bloom filter implementation designed to be used with *secure_text_search fields
     class BloomFilter
+      # The min and max values for k and m:
+
+      # K_MIN = 3
+      # K_MAX = 16
+      # M_MIN = 32
+      # M_MAX = 65536
+
       # The "set" bits of the bloom filter
       attr_reader :bits
 
@@ -33,6 +40,10 @@ module Protect
       #
       # @param opts [Hash] the index settings.
       #   "filter_size" and "filter_term_bits" are used to set the m and k attrs respectively.
+      #
+      # ## Example
+      #
+      # BloomFilter.new(key, {filter_size: 256, filter_term_bits: 3})
       #
       # @raise [Protect::Error] if opts not provided, or invalid filter_size or filter_term_bits.
       def initialize(key, opts = {})
