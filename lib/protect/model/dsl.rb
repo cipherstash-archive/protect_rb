@@ -113,11 +113,34 @@ module Protect
         end
 
         def bloom_filter_settings?(options)
-          BloomFilterValidations.valid_filter_options?(options)
+          valid_filter_options = BloomFilterValidations.valid_filter_options?(options)
+          m = options.fetch(:filter_size, nil)
+          k = options.fetch(:filter_term_bits, nil)
+
+          valid_filter_options && BloomFilterValidations.valid_m?(m) && BloomFilterValidations.valid_k?(k)
         end
 
         def text_analysis_settings?(options)
-          options.has_key?(:tokenizer) && options.has_key?(:token_filters)
+          valid_keys = options.has_key?(:tokenizer) && options.has_key?(:token_filters)
+
+          valid_tokenizer = valid_tokenizer?(options[:tokenizer])
+          valid_token_filters = options[:token_filters].kind_of?(Array) && valid_token_filters?(options[:token_filters])
+        end
+
+        def valid_tokenizer?(obj)
+          obj && obj[:kind] == :standard
+        end
+
+        def valid_token_filters?(arr)
+          filters = arr.map { |obj| obj[:kind] }
+
+          filters.include?(:downcase) || filters.include?(:ngram) && valid_token_length(arr)
+        end
+
+        def valid_token_length?(arr)
+          token_length = arr.select { |f| f.has_key?(:token_length)}
+
+          token_length.instance_of?(Integer)
         end
       end
     end

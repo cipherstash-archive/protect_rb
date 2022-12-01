@@ -22,7 +22,7 @@ RSpec.describe Protect::Analysis::TextProcessor do
               { kind: :downcase }
             ]
           })
-        }.to raise_error(Protect::Error, "No tokenizer provided. Use tokenizer: {kind: 'standard'} in your settings.")
+        }.to raise_error(Protect::Error, "No tokenizer provided. Use tokenizer: {kind: :standard} in your settings.")
     end
 
     it "raises an error if a tokenizer other than standard is provided" do
@@ -33,7 +33,7 @@ RSpec.describe Protect::Analysis::TextProcessor do
             ],
             tokenizer: { kind: "non-standard" }
           })
-        }.to raise_error(Protect::Error, "Unknown tokenizer: 'non-standard'. Use tokenizer: {kind: 'standard'} in your settings.")
+        }.to raise_error(Protect::Error, "Unknown tokenizer: 'non-standard'. Use tokenizer: {kind: :standard} in your settings.")
     end
 
     it "raises an error if no token filters are provided" do
@@ -68,7 +68,7 @@ RSpec.describe Protect::Analysis::TextProcessor do
           ],
          tokenizer: { kind: :standard }
         })
-        }.to raise_error(Protect::Error, "Token length not provided. Please specify token length using '{kind: 'ngram', tokenLength: 3}'")
+        }.to raise_error(Protect::Error, "Token length not provided. Please specify token length using '{kind: :ngram, tokenLength: 3}'")
     end
   end
 end
