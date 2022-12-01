@@ -70,20 +70,20 @@ module Protect
             raise Protect::Error, "Invalid secure_text_search options provided in model for attribute '#{attribute}'."
           end
 
-          unless descriptor_id?(options)
+          unless bloom_filter_id?(options)
             raise Protect::Error, "Bloom filter id has not been set. Specify 'bloom_filter_id' with a valid uuid as part of the options for attribute '#{attribute}'."
           end
 
           # Check if secure_search has already been called before calling Lockbox has_encrypted
           # and updating protect_search_attrs with attribute.
           if duplicate_secure_search_attribute?(protect_search_attrs, attribute)
-            protect_search_attrs[attribute][:searchable_text_attribute] = column_name.to_s
+            protect_search_attrs[attribute][:searchable_text_attribute] = secure_text_search_attributes(column_name, options)
           else
             # Call Lockbox to ensure that the underlying attribute is encrypted
             has_encrypted attribute, :type => type
 
             protect_search_attrs[attribute] = {
-              searchable_text_attribute: column_name.to_s,
+              searchable_text_attribute: secure_text_search_attributes(column_name, options),
               type: type,
               lockbox_attribute: lockbox_attributes[attribute]
             }
@@ -135,8 +135,20 @@ module Protect
           valid_keys && valid_tokenizer && valid_token_filters
         end
 
-        def descriptor_id?(options)
+        def bloom_filter_id?(options)
           options.has_key?(:bloom_filter_id) && UUID.validate(options[:bloom_filter_id])
+        end
+
+        def secure_text_search_attributes(column_name, options)
+          {
+            column_name.to_sym => {
+              filter_size: options[:filter_size],
+              filter_term_bits: options[:filter_term_bits],
+              bloom_filter_id: options[:bloom_filter_id],
+              tokenizer: options[:tokenizer],
+              token_filters: options[:token_filters]
+            }
+          }
         end
       end
     end

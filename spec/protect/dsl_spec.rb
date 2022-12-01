@@ -218,14 +218,39 @@ RSpec.describe Protect::Model::DSL do
       end
 
       it "allows for secure_text_search to be specified on a text attribute with only tokenizer setting and downcase filter" do
-          expect {
-            model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
-            bloom_filter_id: VALID_BLOOM_FILTER_ID,
-            tokenizer: { kind: :standard },
-            token_filters: [
-              {kind: :downcase}
-            ]
-          }.to_not raise_error
+        expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          bloom_filter_id: VALID_BLOOM_FILTER_ID,
+          tokenizer: { kind: :standard },
+          token_filters: [
+            {kind: :downcase}
+          ]
+        }.to_not raise_error
+      end
+
+      it "updates protect_search_attrs with searchable text attributes" do
+        model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          bloom_filter_id: VALID_BLOOM_FILTER_ID,
+          tokenizer: { kind: :standard },
+          token_filters: [
+            {kind: :downcase}
+          ]
+
+        searchable_text_attributes = model.protect_search_attrs[:full_name][:searchable_text_attribute]
+
+        expect(searchable_text_attributes).to eq(
+            {
+              :full_name_secure_text_search=>{
+              :filter_size=>256,
+              :filter_term_bits=>3,
+              :bloom_filter_id=>VALID_BLOOM_FILTER_ID,
+              :tokenizer=>{:kind=>:standard},
+              :token_filters=>[
+                {:kind=>:downcase}
+              ]
+              }
+            }
+        )
       end
     end
   end
