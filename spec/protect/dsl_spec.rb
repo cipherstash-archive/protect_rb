@@ -27,6 +27,30 @@ RSpec.describe Protect::Model::DSL do
         }.to_not raise_error
       end
 
+      it "does not override existing searchable text attribute when updating protect_search_attrs" do
+        model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+        bloom_filter_id: VALID_BLOOM_FILTER_ID,
+        tokenizer: { kind: :standard },
+        token_filters: [
+          {kind: :downcase}
+        ]
+        model.secure_search :full_name
+
+        protect_search_attrs = model.protect_search_attrs[:full_name]
+
+        expect(protect_search_attrs).to eq({
+          :lockbox_attribute => {:attribute=>"full_name", :encode=>true, :encrypted_attribute=>"full_name_ciphertext", :type=>:string},
+          :searchable_attribute => "full_name_secure_search",
+          :searchable_text_attribute => {
+            :full_name_secure_text_search=>{
+              :bloom_filter_id=>"4f108250-53f8-013b-0bb5-0e015c998818",
+              :filter_size=>256, :filter_term_bits=>3,
+              :token_filters=>[{:kind=>:downcase}],
+              :tokenizer=>{:kind=>:standard}}},
+          :type => :string
+       })
+      end
+
       context "when a secure_search attribute does not exist" do
         it "raises an error if there are no pending migrations" do
           expect {
@@ -251,6 +275,30 @@ RSpec.describe Protect::Model::DSL do
               }
             }
         )
+      end
+
+      it "does not override existing searchable attribute when updating protect_search_attrs" do
+        model.secure_search :full_name
+        model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          bloom_filter_id: VALID_BLOOM_FILTER_ID,
+          tokenizer: { kind: :standard },
+          token_filters: [
+            {kind: :downcase}
+        ]
+
+        protect_search_attrs = model.protect_search_attrs[:full_name]
+
+        expect(protect_search_attrs).to eq({
+          :lockbox_attribute => {:attribute=>"full_name", :encode=>true, :encrypted_attribute=>"full_name_ciphertext", :type=>:string},
+          :searchable_attribute => "full_name_secure_search",
+          :searchable_text_attribute => {
+            :full_name_secure_text_search=>{
+              :bloom_filter_id=>"4f108250-53f8-013b-0bb5-0e015c998818",
+              :filter_size=>256, :filter_term_bits=>3,
+              :token_filters=>[{:kind=>:downcase}],
+              :tokenizer=>{:kind=>:standard}}},
+          :type => :string
+       })
       end
     end
   end
