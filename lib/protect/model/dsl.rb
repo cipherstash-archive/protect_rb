@@ -47,7 +47,6 @@ module Protect
           end
         end
 
-        # { filter_size: 256, filter_term_bits: 3, tokenizer: {kind: "standard"}, token_filters: [{kind: "downcase"}, {kind: "ngram", token_length: 3}]}
         def secure_text_search(attribute, **options)
           type = options.delete(:type) || :string
           column_name = "#{attribute}_secure_text_search"

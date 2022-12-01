@@ -49,7 +49,7 @@ module Protect
             TokenFilters::Downcase.new(obj)
 
           when :ngram
-            raise Protect::Error, "Token length not provided. Please specify token length using '{kind: 'ngram', tokenLength: 3}'" unless obj[:token_length]
+            raise Protect::Error, "Token length not provided. Please specify token length using '{kind: :ngram, tokenLength: 3}'" unless obj[:token_length]
 
             TokenFilters::NGram.new(obj)
 
@@ -60,12 +60,12 @@ module Protect
       end
 
       def build_tokenizer(obj)
-        raise Protect::Error, "No tokenizer provided. Use tokenizer: {kind: 'standard'} in your settings." unless obj
+        raise Protect::Error, "No tokenizer provided. Use tokenizer: {kind: :standard} in your settings." unless obj
 
         if obj[:kind] == :standard
           Tokenizer::Standard.new
         else
-          raise Protect::Error, "Unknown tokenizer: '#{obj[:kind]}'. Use tokenizer: {kind: 'standard'} in your settings."
+          raise Protect::Error, "Unknown tokenizer: '#{obj[:kind]}'. Use tokenizer: {kind: :standard} in your settings."
         end
       end
     end

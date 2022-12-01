@@ -66,17 +66,17 @@ RSpec.describe Protect::Model::DSL do
           self.table_name = DslTesting.table_name
 
           secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
-          tokenizer: { kind: "standard" },
+          tokenizer: { kind: :standard },
           token_filters: [
-            {kind: "downcase"},
-            {kind: "ngram", token_length: 3}
+            {kind: :downcase},
+            {kind: :ngram, token_length: 3}
           ]
         end
       }
 
       it "raises an error when secure_text_search has already been specified for an attribute" do
         expect {
-          model_text_search.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3, tokenizer: "standard", token_filters: []
+          model_text_search.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3, tokenizer: :standard, token_filters: []
 
         }.to raise_error(Protect::Error, "Attribute 'full_name' is already specified as a secure text search attribute.")
       end
@@ -102,10 +102,10 @@ RSpec.describe Protect::Model::DSL do
       it "raises an error when no bloom filter settings are provided" do
         expect {
           model.secure_text_search :full_name,
-          tokenizer: { kind: "standard" },
+          tokenizer: { kind: :standard },
           token_filters: [
-            {kind: "downcase"},
-            {kind: "ngram", token_length: 3}
+            {kind: :downcase},
+            {kind: :ngram, token_length: 3}
           ]
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
@@ -119,10 +119,10 @@ RSpec.describe Protect::Model::DSL do
       it "allows for secure_text_search to be specified on a text attribute" do
         expect {
           model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
-          tokenizer: { kind: "standard" },
+          tokenizer: { kind: :standard },
           token_filters: [
-            {kind: "downcase"},
-            {kind: "ngram", token_length: 3}
+            {kind: :downcase},
+            {kind: :ngram, token_length: 3}
           ]
         }.to_not raise_error
       end
