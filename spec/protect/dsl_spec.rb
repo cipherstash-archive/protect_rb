@@ -93,7 +93,7 @@ RSpec.describe Protect::Model::DSL do
         }.to raise_error(Protect::Error, "Column name 'email_secure_text_search' is not of type 'smallint[]' (in secure_text_search :email)")
       end
 
-      it "raises an error when no bloom filter or tokenization settings are provided" do
+      it "raises an error when no bloom filter or text analysis settings are provided" do
         expect {
           model.secure_text_search :full_name
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
@@ -110,7 +110,7 @@ RSpec.describe Protect::Model::DSL do
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
-      it "raises an error when no text analysis settings settings are provided" do
+      it "raises an error when no text analysis settings are provided" do
         expect {
           model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
@@ -136,7 +136,7 @@ RSpec.describe Protect::Model::DSL do
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
-      it "raises an eror when an invalid tokenizer is provided" do
+      it "raises an error when an invalid tokenizer is provided" do
         expect {
           model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
           tokenizer: { kind: :non_standard },
@@ -147,14 +147,36 @@ RSpec.describe Protect::Model::DSL do
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
-      it "raises an eror when an invalid token filter is provided" do
+      it "raises an error when an invalid token filter is provided" do
         expect {
           model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
           tokenizer: { kind: :standard },
           token_filters: [
-            {kind: :blah}
+            {kind: :invalid_filter}
           ]
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
+      end
+
+      it "raises an error when an ngram filter is specified without token_length" do
+       expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          tokenizer: { kind: :standard },
+          token_filters: [
+            {kind: :ngram}
+          ]
+        }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
+      end
+
+      ["3", nil, { test: "something"}, "test", Object.new].each do |t|
+        it "raises an error when an ngram filter is specified with an invalid token_length #{t.inspect}" do
+          expect {
+            model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+            tokenizer: { kind: :standard },
+            token_filters: [
+              {kind: :ngram, token_length: t}
+            ]
+          }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
+        end
       end
 
       it "allows for secure_text_search to be specified on a text attribute" do

@@ -135,7 +135,7 @@ module Protect
         def valid_token_filters?(arr)
           filters = arr.map { |obj| obj[:kind] }
 
-          filters.include?(:downcase) || filters.include?(:ngram) && valid_token_length(arr)
+          filters.include?(:downcase) || filters.include?(:ngram) && valid_token_length?(arr)
         end
 
         def valid_token_length?(arr)
