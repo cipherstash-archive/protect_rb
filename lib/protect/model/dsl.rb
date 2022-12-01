@@ -1,6 +1,7 @@
 require "active_support/concern"
 require "protect/active_record_extensions/bloom_filter_validations"
 require "protect/analysis/token_validations"
+require "uuid"
 
 module Protect
   module Model
@@ -69,6 +70,10 @@ module Protect
             raise Protect::Error, "Invalid secure_text_search options provided in model for attribute '#{attribute}'."
           end
 
+          unless descriptor_id?(options)
+            raise Protect::Error, "Bloom filter id has not been set. Specify 'bloom_filter_id' with a valid uuid as part of the options for attribute '#{attribute}'."
+          end
+
           # Check if secure_search has already been called before calling Lockbox has_encrypted
           # and updating protect_search_attrs with attribute.
           if duplicate_secure_search_attribute?(protect_search_attrs, attribute)
@@ -128,6 +133,10 @@ module Protect
           valid_token_filters = Protect::Analysis::TokenValidations.valid_token_filters?(options)
 
           valid_keys && valid_tokenizer && valid_token_filters
+        end
+
+        def descriptor_id?(options)
+          options.has_key?(:bloom_filter_id) && UUID.validate(options[:bloom_filter_id])
         end
       end
     end

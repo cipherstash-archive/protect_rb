@@ -55,6 +55,8 @@ RSpec.describe Protect::Model::DSL do
     end
 
     context "secure_text_search" do
+      VALID_BLOOM_FILTER_ID = "4f108250-53f8-013b-0bb5-0e015c998818"
+
       let(:model) {
         Class.new(ActiveRecord::Base) do
           self.table_name = DslTesting.table_name
@@ -66,6 +68,7 @@ RSpec.describe Protect::Model::DSL do
           self.table_name = DslTesting.table_name
 
           secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          bloom_filter_id: VALID_BLOOM_FILTER_ID,
           tokenizer: { kind: :standard },
           token_filters: [
             {kind: :downcase},
@@ -179,9 +182,33 @@ RSpec.describe Protect::Model::DSL do
         end
       end
 
+      it "raises an error if a bloom filter id is not set" do
+         expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          tokenizer: { kind: :standard },
+          token_filters: [
+            {kind: :downcase},
+            {kind: :ngram, token_length: 3}
+          ]
+        }.to raise_error(Protect::Error, "Bloom filter id has not been set. Specify 'bloom_filter_id' with a valid uuid as part of the options for attribute 'full_name'.")
+      end
+
+      it "raises an error if an invalid uuid is provided to bloom filter id" do
+          expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998",
+          tokenizer: { kind: :standard },
+          token_filters: [
+            {kind: :downcase},
+            {kind: :ngram, token_length: 3}
+          ]
+        }.to raise_error(Protect::Error, "Bloom filter id has not been set. Specify 'bloom_filter_id' with a valid uuid as part of the options for attribute 'full_name'.")
+      end
+
       it "allows for secure_text_search to be specified on a text attribute with tokenizer and token filter settings" do
         expect {
           model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          bloom_filter_id: VALID_BLOOM_FILTER_ID,
           tokenizer: { kind: :standard },
           token_filters: [
             {kind: :downcase},
@@ -193,6 +220,7 @@ RSpec.describe Protect::Model::DSL do
       it "allows for secure_text_search to be specified on a text attribute with only tokenizer setting and downcase filter" do
           expect {
             model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+            bloom_filter_id: VALID_BLOOM_FILTER_ID,
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase}
