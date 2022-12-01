@@ -35,7 +35,7 @@ module Protect
       #   "filter_size" and "filter_term_bits" are used to set the m and k attrs respectively.
       #
       # @raise [Protect::Error] if opts not provided, or invalid filter_size or filter_term_bits.
-      def initialize(key, **opts)
+      def initialize(key, opts = {})
         unless opts.size > 1 && BloomFilterValidations.valid_filter_options?(opts)
           raise Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits."
         end
