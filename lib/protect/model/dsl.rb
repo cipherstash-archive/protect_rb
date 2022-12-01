@@ -122,9 +122,10 @@ module Protect
 
         def text_analysis_settings?(options)
           valid_keys = options.has_key?(:tokenizer) && options.has_key?(:token_filters)
-
           valid_tokenizer = valid_tokenizer?(options[:tokenizer])
           valid_token_filters = options[:token_filters].kind_of?(Array) && valid_token_filters?(options[:token_filters])
+
+          valid_keys && valid_tokenizer && valid_token_filters
         end
 
         def valid_tokenizer?(obj)

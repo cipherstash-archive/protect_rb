@@ -136,6 +136,27 @@ RSpec.describe Protect::Model::DSL do
         }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
+      it "raises an eror when an invalid tokenizer is provided" do
+        expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          tokenizer: { kind: :non_standard },
+          token_filters: [
+            {kind: :downcase},
+            {kind: :ngram, token_length: 3}
+          ]
+        }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
+      end
+
+      it "raises an eror when an invalid token filter is provided" do
+        expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          tokenizer: { kind: :standard },
+          token_filters: [
+            {kind: :blah}
+          ]
+        }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
+      end
+
       it "allows for secure_text_search to be specified on a text attribute" do
         expect {
           model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
