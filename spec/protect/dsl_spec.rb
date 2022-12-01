@@ -65,13 +65,19 @@ RSpec.describe Protect::Model::DSL do
         Class.new(ActiveRecord::Base) do
           self.table_name = DslTesting.table_name
 
-          secure_text_search :full_name
+          secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          tokenizer: { kind: "standard" },
+          token_filters: [
+            {kind: "downcase"},
+            {kind: "ngram", token_length: 3}
+          ]
         end
       }
 
       it "raises an error when secure_text_search has already been specified for an attribute" do
         expect {
-          model_text_search.secure_text_search :full_name
+          model_text_search.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3, tokenizer: "standard", token_filters: []
+
         }.to raise_error(Protect::Error, "Attribute 'full_name' is already specified as a secure text search attribute.")
       end
 
@@ -87,27 +93,39 @@ RSpec.describe Protect::Model::DSL do
         }.to raise_error(Protect::Error, "Column name 'email_secure_text_search' is not of type 'smallint[]' (in secure_text_search :email)")
       end
 
-      xit "raises an error when no bloom filter or tokenization settings are provided" do
+      it "raises an error when no bloom filter or tokenization settings are provided" do
+        expect {
+          model.secure_text_search :full_name
+        }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
-      xit "raises an error when no bloom filter settings are provided" do
+      it "raises an error when no bloom filter settings are provided" do
+        expect {
+          model.secure_text_search :full_name,
+          tokenizer: { kind: "standard" },
+          token_filters: [
+            {kind: "downcase"},
+            {kind: "ngram", token_length: 3}
+          ]
+        }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
-      xit "raises an error when no tokenization settings settings are provided" do
+      it "raises an error when no tokenization settings settings are provided" do
+        expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3
+        }.to raise_error(Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
-      xit "checks if underlying attribute is already lockbox encrypted" do
-      end
-
-      xit "allows for secure_text_search to be specified on a text attribute" do
+      it "allows for secure_text_search to be specified on a text attribute" do
+        expect {
+          model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+          tokenizer: { kind: "standard" },
+          token_filters: [
+            {kind: "downcase"},
+            {kind: "ngram", token_length: 3}
+          ]
+        }.to_not raise_error
       end
     end
   end
 end
-
-# Tests;
-# What if secure_search is specified already, then lockbox has_encrypted
-# would have been called.
-# vice versas, if secure_text_search is specified already, then lockbox
-# has_encrypted has been called.
-# add additional model/s to test this.

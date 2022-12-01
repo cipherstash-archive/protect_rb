@@ -1,4 +1,5 @@
 require "active_support/concern"
+require "protect/active_record_extensions/bloom_filter_validations"
 
 module Protect
   module Model
@@ -32,7 +33,9 @@ module Protect
 
           # Check if secure_text_search has already been called before calling Lockbox has_encrypted
           # and updating protect_search_attrs with attribute
-          if !duplicate_secure_text_search_attribute?(protect_search_attrs, attribute)
+          if duplicate_secure_text_search_attribute?(protect_search_attrs, attribute)
+            protect_search_attrs[attribute][:searchable_attribute] = column_name.to_s
+          else
             # Call Lockbox to ensure that the underlying attribute is encrypted
             has_encrypted attribute, :type => type
 
@@ -41,31 +44,35 @@ module Protect
               type: type,
               lockbox_attribute: lockbox_attributes[attribute]
             }
-          else
-            protect_search_attrs[attribute][:searchable_attribute] = column_name.to_s
           end
         end
 
+        # { filter_size: 256, filter_term_bits: 3, tokenizer: {kind: "standard"}, token_filters: [{kind: "downcase"}, {kind: "ngram", token_length: 3}]}
         def secure_text_search(attribute, **options)
+          type = options.delete(:type) || :string
+          column_name = "#{attribute}_secure_text_search"
+
           if duplicate_secure_text_search_attribute?(protect_search_attrs, attribute)
             raise Protect::Error, "Attribute '#{attribute}' is already specified as a secure text search attribute."
           end
 
-          type = options.delete(:type) || :string
-
-          if !secure_text_search_type?(type)
+          unless secure_text_search_type?(type)
             raise Protect::Error, "Attribute '#{attribute}' is not a valid type. Attribute must be of type 'string' or 'text'."
           end
 
-          column_name = "#{attribute}_secure_text_search"
-
-          if !bloom_filter_db_type?(column_name)
+          unless bloom_filter_db_type?(column_name)
             raise Protect::Error, "Column name '#{column_name}' is not of type 'smallint[]' (in secure_text_search :#{attribute})"
+          end
+
+          unless bloom_filter_settings?(options) && text_analysis_settings?(options)
+            raise Protect::Error, "Invalid secure_text_search options provided in model for attribute '#{attribute}'."
           end
 
           # Check if secure_search has already been called before calling Lockbox has_encrypted
           # and updating protect_search_attrs with attribute.
-          if !duplicate_secure_search_attribute?(protect_search_attrs, attribute)
+          if duplicate_secure_search_attribute?(protect_search_attrs, attribute)
+            protect_search_attrs[attribute][:searchable_text_attribute] = column_name.to_s
+          else
             # Call Lockbox to ensure that the underlying attribute is encrypted
             has_encrypted attribute, :type => type
 
@@ -74,8 +81,6 @@ module Protect
               type: type,
               lockbox_attribute: lockbox_attributes[attribute]
             }
-          else
-            protect_search_attrs[attribute][:searchable_text_attribute] = column_name.to_s
           end
         end
 
@@ -109,11 +114,11 @@ module Protect
         end
 
         def bloom_filter_settings?(options)
-          options.has_key?(:filter_size) && options.has_key?(:filter_term_bits)
+          BloomFilterValidations.valid_filter_options?(options)
         end
 
         def text_analysis_settings?(options)
-          options.has_key?(:token_filters)
+          options.has_key?(:tokenizer) && options.has_key?(:token_filters)
         end
       end
     end
