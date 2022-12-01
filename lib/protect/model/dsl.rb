@@ -1,10 +1,12 @@
 require "active_support/concern"
 require "protect/active_record_extensions/bloom_filter_validations"
+require "protect/analysis/token_validations"
 
 module Protect
   module Model
     module DSL
       extend ActiveSupport::Concern
+
       class_methods do
         def secure_search(attribute, **options)
           if duplicate_secure_search_attribute?(protect_search_attrs, attribute)
@@ -122,26 +124,10 @@ module Protect
 
         def text_analysis_settings?(options)
           valid_keys = options.has_key?(:tokenizer) && options.has_key?(:token_filters)
-          valid_tokenizer = valid_tokenizer?(options[:tokenizer])
-          valid_token_filters = options[:token_filters].kind_of?(Array) && valid_token_filters?(options[:token_filters])
+          valid_tokenizer = Protect::Analysis::TokenValidations.valid_tokenizer?(options[:tokenizer])
+          valid_token_filters = options[:token_filters].kind_of?(Array) && Protect::Analysis::TokenValidations.valid_token_filters?(options[:token_filters])
 
           valid_keys && valid_tokenizer && valid_token_filters
-        end
-
-        def valid_tokenizer?(obj)
-          obj && obj[:kind] == :standard
-        end
-
-        def valid_token_filters?(arr)
-          filters = arr.map { |obj| obj[:kind] }
-
-          filters.include?(:downcase) || filters.include?(:ngram) && valid_token_length?(arr)
-        end
-
-        def valid_token_length?(arr)
-          token_length = arr.select { |f| f.has_key?(:token_length)}
-
-          token_length.instance_of?(Integer)
         end
       end
     end
