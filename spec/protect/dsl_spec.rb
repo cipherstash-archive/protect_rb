@@ -179,7 +179,7 @@ RSpec.describe Protect::Model::DSL do
         end
       end
 
-      it "allows for secure_text_search to be specified on a text attribute" do
+      it "allows for secure_text_search to be specified on a text attribute with tokenizer and token filter settings" do
         expect {
           model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
           tokenizer: { kind: :standard },
@@ -188,6 +188,16 @@ RSpec.describe Protect::Model::DSL do
             {kind: :ngram, token_length: 3}
           ]
         }.to_not raise_error
+      end
+
+      it "allows for secure_text_search to be specified on a text attribute with only tokenizer setting and downcase filter" do
+          expect {
+            model.secure_text_search :full_name, filter_size: 256, filter_term_bits: 3,
+            tokenizer: { kind: :standard },
+            token_filters: [
+              {kind: :downcase}
+            ]
+          }.to_not raise_error
       end
     end
   end
