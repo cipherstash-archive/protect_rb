@@ -110,8 +110,8 @@ RSpec.describe Protect::Model::DSL do
 
       it "raises an error when secure_text_search is specified on a non text attribute" do
         expect {
-          model.secure_text_search :dob, type: :date
-        }.to raise_error(Protect::Error, "Attribute 'dob' is not a valid type. Attribute must be of type 'string' or 'text'.")
+          model.secure_text_search :verified, type: :boolean
+        }.to raise_error(Protect::Error, "Attribute 'verified' is not a valid secure_text_search type. Attribute must be of type 'string' or 'text'.")
       end
 
       it "raises an error when secure_text_search attribute is not db data type 'smallint[]'" do
@@ -299,6 +299,32 @@ RSpec.describe Protect::Model::DSL do
               :tokenizer=>{:kind=>:standard}}},
           :type => :string
        })
+      end
+
+      context "when a secure_text_search attribute does not exist" do
+        it "raises an error if there are no pending migrations" do
+          expect {
+            Class.new(ActiveRecord::Base) do
+              self.table_name = DslTesting.table_name
+              secure_text_search :unicorn, type: :string
+            end
+          }.to raise_error(Protect::Error, "Column name 'unicorn_secure_text_search' does not exist")
+        end
+
+        it "silently logs if there are pending migrations" do
+          allow_any_instance_of(ActiveRecord::MigrationContext).to(
+            receive(:needs_migration?).and_return(true)
+          )
+
+          logger = Logger.new(IO::NULL)
+          expect(logger).to receive(:debug).with(/Protect cannot find column 'unicorn_secure_text_search' on '[^']+'/)
+          ActiveRecord::Base.logger = logger
+
+          Class.new(ActiveRecord::Base) do
+            self.table_name = DslTesting.table_name
+            secure_text_search :unicorn, type: :string
+          end
+        end
       end
     end
   end

@@ -58,8 +58,21 @@ module Protect
             raise Protect::Error, "Attribute '#{attribute}' is already specified as a secure text search attribute."
           end
 
+          # Does the column exist?
+          if not columns_hash.has_key?(column_name)
+            # Quietly return only if we're pending DB migrations
+            # (eg. in the middle of a migration run, or setting up the Rails
+            #  app to start a DB migration run).
+            if ActiveRecord::Base.connection.migration_context.needs_migration?
+              logger.try(:debug, "Protect cannot find column '#{column_name}' on '#{self}' while pending DB migration")
+              return
+            else
+              raise Protect::Error, "Column name '#{column_name}' does not exist"
+            end
+          end
+
           unless secure_text_search_type?(type)
-            raise Protect::Error, "Attribute '#{attribute}' is not a valid type. Attribute must be of type 'string' or 'text'."
+            raise Protect::Error, "Attribute '#{attribute}' is not a valid secure_text_search type. Attribute must be of type 'string' or 'text'."
           end
 
           unless bloom_filter_db_type?(column_name)
