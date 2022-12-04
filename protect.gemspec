@@ -1,13 +1,8 @@
-begin
-  require "git-version-bump"
-rescue LoadError
-  nil
-end
+require_relative 'lib/protect/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "protect"
-  spec.version       = GVB.version rescue "0.0.0.1.NOGVB"
-  spec.date          = GVB.date    rescue Time.now.strftime("%Y-%m-%d")
+  spec.version       = Protect::VERSION
   spec.authors       = ["Fi McCawley", "James Sadler"]
   spec.email         = ["fiona@cipherstash.com", "james@cipherstash.com"]
 
@@ -31,7 +26,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "ore-rs"
   spec.add_runtime_dependency "progress_bar"
 
-  spec.add_development_dependency "git-version-bump", "~> 0.17"
   spec.add_development_dependency 'pg'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency "debug", ">= 1.0.0"
