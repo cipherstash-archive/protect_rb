@@ -5,10 +5,11 @@ require 'securerandom'
 require 'ore-rs'
 require 'progress_bar'
 
+require_relative './protect/model'
+
 require_relative './protect/active_record_extensions'
 require_relative './protect/database_extensions'
 require_relative './protect/logger'
-require_relative './protect/model'
 require_relative './protect/railtie' if defined?(Rails::Railtie)
 
 module Protect
