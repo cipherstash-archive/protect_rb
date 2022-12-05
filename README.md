@@ -18,7 +18,7 @@ Protect is compatible with the following databases:
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem "protect"
+gem "cipherstash-protect"
 ```
 
 Run:
