@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "activerecord"
   spec.add_runtime_dependency "lockbox"
-  spec.add_runtime_dependency "ore-rs"
+  spec.add_runtime_dependency "ore-rs", "~> 0.7.0"
   spec.add_runtime_dependency "progress_bar"
   spec.add_runtime_dependency "uuid"
 
