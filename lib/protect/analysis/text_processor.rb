@@ -17,10 +17,10 @@ module Protect
       #
       # TextProcessor.new({
       #   token_filters: [
-      #     {kind: "downcase"},
-      #     {kind: "ngram", token_length: 3}
+      #     {kind: :downcase},
+      #     {kind: :ngram, token_length: 3}
       #   ],
-      #   tokenizer: {kind: "standard"}
+      #   tokenizer: {kind: :standard}
       # })
       #
       def initialize(settings)
@@ -45,11 +45,11 @@ module Protect
         raise Protect::Error, "No token filters provided." unless array && array.length > 0
         array.map do |obj|
           case obj[:kind]
-          when "downcase"
+          when :downcase
             TokenFilters::Downcase.new(obj)
 
-          when "ngram"
-            raise Protect::Error, "Token length not provided. Please specify token length using '{kind: 'ngram', tokenLength: 3}'" unless obj[:token_length]
+          when :ngram
+            raise Protect::Error, "Token length not provided. Please specify token length using '{kind: :ngram, tokenLength: 3}'" unless obj[:token_length]
 
             TokenFilters::NGram.new(obj)
 
@@ -60,12 +60,12 @@ module Protect
       end
 
       def build_tokenizer(obj)
-        raise Protect::Error, "No tokenizer provided. Use tokenizer: {kind: 'standard'} in your settings." unless obj
+        raise Protect::Error, "No tokenizer provided. Use tokenizer: {kind: :standard} in your settings." unless obj
 
-        if obj[:kind] == "standard"
+        if obj[:kind] == :standard
           Tokenizer::Standard.new
         else
-          raise Protect::Error, "Unknown tokenizer: '#{obj[:kind]}'. Use tokenizer: {kind: 'standard'} in your settings."
+          raise Protect::Error, "Unknown tokenizer: '#{obj[:kind]}'. Use tokenizer: {kind: :standard} in your settings."
         end
       end
     end
