@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Add searchable encryption to your rails models}
   spec.description   = %q{This gem wraps the CipherStash order-revealing-encryption library and enhances ActiveRecord to support encrypted search}
   spec.homepage      = "https://cipherstash.com/protect"
-  spec.license       = "MIT"
+  spec.license       = "LicenseRef-LICENCE"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
