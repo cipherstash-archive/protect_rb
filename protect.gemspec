@@ -1,7 +1,7 @@
 require_relative 'lib/protect/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "protect"
+  spec.name          = "cipherstash-protect"
   spec.version       = Protect::VERSION
   spec.authors       = ["Fi McCawley", "James Sadler"]
   spec.email         = ["fiona@cipherstash.com", "james@cipherstash.com"]
