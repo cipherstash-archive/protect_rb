@@ -1,6 +1,8 @@
 require 'open3'
 
 require 'rspec/core/rake_task'
+require 'bundler/gem_tasks'
+
 RSpec::Core::RakeTask.new(:spec => 'db:create')
 
 namespace :db do
