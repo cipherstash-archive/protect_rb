@@ -1,21 +1,21 @@
-require_relative '../protect'
+require_relative '../cipherstash/protect'
 
 namespace :protect do
   desc "Encrypt plaintext fields marked as secure search to encrypted columns"
   task :encrypt, [:model] => :environment do |_task, args|
     if args[:model].nil?
-      raise Protect::Error
+      raise CipherStash::Protect::Error
     end
 
     model = args[:model].constantize
 
-    Protect.encrypt(model)
+    CipherStash::Protect.encrypt(model)
   end
 
   desc "Generate local keys to use with Protect"
   task :generate_keys do
     lockbox_key = Lockbox.generate_key
-    protect_key = Protect.generate_key
+    protect_key = CipherStash::Protect.generate_key
 
     info = <<~EOF
       Add the below keys to your rails credentials file:
@@ -33,6 +33,6 @@ namespace :protect do
         CS_PROTECT_KEY=#{protect_key}
     EOF
 
-    info.split("\n").each {|line| Protect::Logger.info(line) }
+    info.split("\n").each {|line| CipherStash::Protect::Logger.info(line) }
   end
 end

@@ -1,7 +1,8 @@
-RSpec.describe Protect::Model::CRUD do
+RSpec.describe CipherStash::Protect::Model::CRUD do
   describe "Read" do
     before(:each) do
-       CrudTesting.create!([{
+      CrudTesting.create!([
+        {
           dob: Date.new(1950,9,21),
           last_login: DateTime.new(2020,9,14),
           age: 72,
@@ -32,7 +33,8 @@ RSpec.describe Protect::Model::CRUD do
           verified: true,
           latitude: 115.634496,
           email: "etheline@tenenbaum.com"
-        }])
+        },
+      ])
     end
 
     describe "equality queries" do
@@ -453,30 +455,32 @@ RSpec.describe Protect::Model::CRUD do
 
       context "when using a combination of fields and queries" do
         before(:each) do
-          PlaintextTesting.create([{
-            dob: Date.new(1947,9,22),
-            last_login: DateTime.new(2022,10,12),
-            age_plaintext: 82,
-            verified: false,
-            latitude: 113.634496,
-            email_plaintext: "kingsley.zissou@belafonte.com"
-          },
-          {
-            dob: Date.new(1940,9,22),
-            last_login: DateTime.new(2021,10,12),
-            age_plaintext: 82,
-            verified: true,
-            latitude: 113.634496,
-            email_plaintext: "steve.zissou@belafonte.com"
-          },
-          {
-            dob: Date.new(1962,9,22),
-            last_login: DateTime.new(2021,10,12),
-            age_plaintext: 60,
-            verified: true,
-            latitude: 113.634496,
-            email_plaintext: "steve.zissou@belafonte.com"
-          }])
+          PlaintextTesting.create([
+            {
+              dob: Date.new(1947,9,22),
+              last_login: DateTime.new(2022,10,12),
+              age_plaintext: 82,
+              verified: false,
+              latitude: 113.634496,
+              email_plaintext: "kingsley.zissou@belafonte.com"
+            },
+            {
+              dob: Date.new(1940,9,22),
+              last_login: DateTime.new(2021,10,12),
+              age_plaintext: 82,
+              verified: true,
+              latitude: 113.634496,
+              email_plaintext: "steve.zissou@belafonte.com"
+            },
+            {
+              dob: Date.new(1962,9,22),
+              last_login: DateTime.new(2021,10,12),
+              age_plaintext: 60,
+              verified: true,
+              latitude: 113.634496,
+              email_plaintext: "steve.zissou@belafonte.com"
+            }
+          ])
         end
 
         it "returns ordered records using both plaintext and encrypted fields" do

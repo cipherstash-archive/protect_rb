@@ -1,4 +1,4 @@
-RSpec.describe "Protect::Model Creation Validates" do
+RSpec.describe "CipherStash::Protect::Model Creation Validates" do
   describe "Validates presence true" do
     let(:model) {
       Class.new(ActiveRecord::Base) do

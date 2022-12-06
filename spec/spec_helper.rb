@@ -1,17 +1,16 @@
 require "bundler/setup"
 require 'rspec/expectations'
 require "active_record"
-require "protect"
 require "lockbox"
 require "debug"
 require "pry"
 require "database_cleaner"
 require "pry-byebug"
 
-include Protect::ActiveRecordExtensions
+require "cipherstash/protect"
 
 ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
-ENV["CS_PROTECT_KEY"] = Protect.generate_key
+ENV["CS_PROTECT_KEY"] = CipherStash::Protect.generate_key
 
 RAILS_VERSION = "#{ActiveRecord::VERSION::MAJOR}.#{ActiveRecord::VERSION::MINOR}".to_f
 

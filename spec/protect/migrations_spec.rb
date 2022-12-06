@@ -12,11 +12,11 @@ RSpec.describe "A Protect customer can run migrations to define searchable colum
 
   describe "when the custom extensions are installed" do
     before(:each) do
-      Protect::DatabaseExtensions.install rescue nil
+      CipherStash::Protect::DatabaseExtensions.install rescue nil
     end
 
     after(:each) do
-      Protect::DatabaseExtensions.uninstall rescue nil
+      CipherStash::Protect::DatabaseExtensions.uninstall rescue nil
       migration.migrate(:down) rescue nil
     end
 

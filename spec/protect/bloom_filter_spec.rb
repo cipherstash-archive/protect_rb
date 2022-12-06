@@ -1,6 +1,6 @@
-require "protect/active_record_extensions/bloom_filter"
+require "cipherstash/protect/active_record_extensions/bloom_filter"
 
-RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
+RSpec.describe CipherStash::Protect::ActiveRecordExtensions::BloomFilter do
   self::VALID_M_VALUES = [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
   self::VALID_K_VALUES = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
@@ -12,7 +12,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
     it "raises an error if filter_size not provided" do
       expect {
         described_class.new(key)
-      }.to raise_error(Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits.")
+      }.to raise_error(CipherStash::Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits.")
     end
 
     self::VALID_M_VALUES.each do |m|
@@ -26,14 +26,14 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
       it "raises given invalid m of #{m.inspect}" do
         expect {
           described_class.new(key, {filter_size:  m, filter_term_bits:  3})
-        }.to raise_error(Protect::Error, "filter_size must be a power of 2 between 32 and 65536 (got #{m.inspect})")
+        }.to raise_error(CipherStash::Protect::Error, "filter_size must be a power of 2 between 32 and 65536 (got #{m.inspect})")
       end
     end
 
     it "raises an error if filter_term_bits not provided" do
       expect {
         described_class.new(key, {filter_size:  256})
-      }.to raise_error(Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits.")
+      }.to raise_error(CipherStash::Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits.")
     end
 
     self::VALID_K_VALUES.each do |k|
@@ -46,20 +46,20 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
     it "raises when k is < 3" do
       expect {
         described_class.new(key, {filter_term_bits:  2, filter_size:  256})
-      }.to raise_error(Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got 2)")
+      }.to raise_error(CipherStash::Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got 2)")
     end
 
     it "raises when k is > 16" do
       expect {
         described_class.new(key, {filter_term_bits:  17, filter_size:  256})
-      }.to raise_error(Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got 17)")
+      }.to raise_error(CipherStash::Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got 17)")
     end
 
     [3.5, "4", "ohai", nil, { foo: "bar" }, Object.new].each do |k|
       it "raises given invalid value of k #{k}" do
         expect {
           described_class.new(key, {filter_term_bits:  k, filter_size:  256})
-        }.to raise_error(Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got #{k.inspect})")
+        }.to raise_error(CipherStash::Protect::Error, "filter_term_bits must be an integer between 3 and 16 (got #{k.inspect})")
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
       expect {
         described_class.new(key, {filter_term_bits:  16, filter_size:  256})
-      }.to raise_error(Protect::Error, "expected bloom filter key to have length=32, got length=16")
+      }.to raise_error(CipherStash::Protect::Error, "expected bloom filter key to have length=32, got length=16")
     end
 
     it "raises when the key is empty" do
@@ -76,7 +76,7 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
       expect {
         described_class.new(key, {filter_term_bits:  16, filter_size:  256})
-      }.to raise_error(Protect::Error, "expected bloom filter key to have length=32, got length=0")
+      }.to raise_error(CipherStash::Protect::Error, "expected bloom filter key to have length=32, got length=0")
     end
 
     it "raises when the key is not a hex string" do
@@ -84,14 +84,14 @@ RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
 
       expect {
         described_class.new(key, {filter_term_bits:  16, filter_size:  256})
-      }.to raise_error(Protect::Error, 'expected bloom filter key to be a hex-encoded string (got "ZZZ")')
+      }.to raise_error(CipherStash::Protect::Error, 'expected bloom filter key to be a hex-encoded string (got "ZZZ")')
     end
 
     [3.5, 4, nil, { foo: "bar" }, Object.new].each do |key|
       it "raises given invalid key #{key.inspect}" do
         expect {
           described_class.new(key, {filter_term_bits:  16, filter_size:  256})
-        }.to raise_error(Protect::Error, "expected bloom filter key to be a hex-encoded string (got #{key.inspect})")
+        }.to raise_error(CipherStash::Protect::Error, "expected bloom filter key to be a hex-encoded string (got #{key.inspect})")
       end
     end
   end

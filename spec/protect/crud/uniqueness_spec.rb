@@ -1,4 +1,4 @@
-RSpec.describe "Protect::Model Creation Uniqueness" do
+RSpec.describe "CipherStash::Protect::Model Creation Uniqueness" do
   describe "UNIQUE-indexed columns" do
     let(:model) {
       Class.new(ActiveRecord::Base) do
