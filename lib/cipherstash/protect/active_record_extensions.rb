@@ -10,22 +10,24 @@ require_relative "./model/query_methods"
 
 if defined?(ActiveSupport.on_load)
   ActiveSupport.on_load(:active_record) do
-    ActiveRecord::Base.include Protect::Model
+    ActiveRecord::Base.include CipherStash::Protect::Model
 
-    ActiveRecord::DynamicMatchers::Method.prepend(Protect::Model::DynamicMatchers)
-    ActiveRecord::PredicateBuilder.prepend(Protect::Model::PredicateBuilder)
-    ActiveRecord::Relation.prepend(Protect::Model::QueryMethods)
-    ActiveRecord::Validations::UniquenessValidator.prepend(Protect::ActiveRecordExtensions::UniquenessValidator)
+    ActiveRecord::DynamicMatchers::Method.prepend(CipherStash::Protect::Model::DynamicMatchers)
+    ActiveRecord::PredicateBuilder.prepend(CipherStash::Protect::Model::PredicateBuilder)
+    ActiveRecord::Relation.prepend(CipherStash::Protect::Model::QueryMethods)
+    ActiveRecord::Validations::UniquenessValidator.prepend(CipherStash::Protect::ActiveRecordExtensions::UniquenessValidator)
 
     require "active_record/connection_adapters/postgresql_adapter"
 
     ActiveRecord::Type.register(
       "ore_64_8_v1",
-      Protect::ActiveRecordExtensions::ORE_64_8_V1_Type,
+      CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1_Type,
       override: true,
       adapter: :postgresql
     )
 
-    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend ::Protect::DatabaseExtensions::Postgresql::ConnectionAdapter
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(
+      CipherStash::Protect::DatabaseExtensions::Postgresql::ConnectionAdapter
+    )
   end
 end

@@ -1,4 +1,6 @@
-RSpec.describe Protect::Model::CRUD do
+RSpec.describe CipherStash::Protect::Model::CRUD do
+  let(:ore_type) { CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1 }
+
   describe "Updates" do
     before(:each) do
       CrudTesting.create!(
@@ -30,7 +32,7 @@ RSpec.describe Protect::Model::CRUD do
     end
 
     context "when using #update" do
-       it "updates the ore and lockbox encrypted values in a single record" do
+      it "updates the ore and lockbox encrypted values in a single record" do
         user_one = CrudTesting.create!(
           dob: Date.new(1969,5,1),
           last_login: DateTime.new(2022,10,14),
@@ -44,8 +46,8 @@ RSpec.describe Protect::Model::CRUD do
 
         # Query using updated values.
         updated_user = CrudTesting.where(
-          email_secure_search: ORE_64_8_V1.encrypt("wes@anderson.com"),
-          verified_secure_search: ORE_64_8_V1.encrypt(false)
+          email_secure_search: ore_type.encrypt("wes@anderson.com"),
+          verified_secure_search: ore_type.encrypt(false)
         )
 
         # Check that updated values are in DB.
@@ -78,8 +80,8 @@ RSpec.describe Protect::Model::CRUD do
 
           # Query using updated values.
           updated_user = CrudTesting.where(
-            email_secure_search: ORE_64_8_V1.encrypt("wes@anderson.com"),
-            verified_secure_search: ORE_64_8_V1.encrypt(false)
+            email_secure_search: ore_type.encrypt("wes@anderson.com"),
+            verified_secure_search: ore_type.encrypt(false)
           )
 
           # Check that updated values are in DB.
@@ -110,7 +112,7 @@ RSpec.describe Protect::Model::CRUD do
 
       it "updates the ore and lockbox encrypted values in multiple records with a where clause", :skip => "update_all not implemented yet" do
         existing_users = CrudTesting.where(
-          last_login_secure_search: ORE_64_8_V1.encrypt(DateTime.new(2022,10,9))
+          last_login_secure_search: ore_type.encrypt(DateTime.new(2022,10,9))
         )
 
         expect(existing_users.length).to eq(3)
@@ -124,7 +126,7 @@ RSpec.describe Protect::Model::CRUD do
         existing_users.update_all(verified:true)
 
         updated_users = CrudTesting.where(
-          last_login_secure_search: ORE_64_8_V1.encrypt(DateTime.new(2022,10,9))
+          last_login_secure_search: ore_type.encrypt(DateTime.new(2022,10,9))
         )
 
         expect(updated_users.length).to eq(3)
@@ -136,7 +138,7 @@ RSpec.describe Protect::Model::CRUD do
 
     context "when using #upsert" do
       it "updates a single record with ore and lockbox encrypted values" do
-        existing_user = CrudTesting.where(email_secure_search:  ORE_64_8_V1.encrypt("frances.ha@gerwig.com"))
+        existing_user = CrudTesting.where(email_secure_search:  ore_type.encrypt("frances.ha@gerwig.com"))
         expect(existing_user.length).to eq(1)
 
         # Update latitude and email
@@ -156,7 +158,7 @@ RSpec.describe Protect::Model::CRUD do
         expect(updated_user_by_id.email).to eq("greta.gerwig@test.com")
 
         # Find by secure search to assert protect rb fields have been updated.
-        updated_user = CrudTesting.where(email_secure_search: ORE_64_8_V1.encrypt("greta.gerwig@test.com"))
+        updated_user = CrudTesting.where(email_secure_search: ore_type.encrypt("greta.gerwig@test.com"))
 
         expect(updated_user.length).to eq(1)
         expect(updated_user.first.latitude).to eq(10.000)
@@ -164,17 +166,17 @@ RSpec.describe Protect::Model::CRUD do
       end
 
       it "creates a single record with ore and lockbox encrypted values" do
-         CrudTesting.upsert({
-          dob: Date.new(1969,3,9),
-          last_login: DateTime.new(2022,10,9),
-          age: 53,
-          verified: true,
-          latitude: 150.634496,
-          email: "noah.baumbach@whale.com"
-        })
+        CrudTesting.upsert({
+         dob: Date.new(1969,3,9),
+         last_login: DateTime.new(2022,10,9),
+         age: 53,
+         verified: true,
+         latitude: 150.634496,
+         email: "noah.baumbach@whale.com"
+       })
 
         created_user = CrudTesting.where(
-          email_secure_search: ORE_64_8_V1.encrypt("noah.baumbach@whale.com")
+          email_secure_search: ore_type.encrypt("noah.baumbach@whale.com")
         )
 
         expect(created_user.length).to eq(1)
@@ -186,7 +188,7 @@ RSpec.describe Protect::Model::CRUD do
 
     context "when using #upsert_all" do
       it "updates multiple records with ore and lockbox encrypted values" do
-        existing_user = CrudTesting.where(email_secure_search:  ORE_64_8_V1.encrypt("frances.ha@gerwig.com"))
+        existing_user = CrudTesting.where(email_secure_search: ore_type.encrypt("frances.ha@gerwig.com"))
         expect(existing_user.length).to eq(1)
 
         CrudTesting.upsert_all([{
@@ -205,7 +207,7 @@ RSpec.describe Protect::Model::CRUD do
         expect(updated_user_by_id.email).to eq("greta.gerwig@test.com")
 
         # Find by secure search to assert protect rb fields have been updated.
-        updated_user = CrudTesting.where(email_secure_search: ORE_64_8_V1.encrypt("greta.gerwig@test.com"))
+        updated_user = CrudTesting.where(email_secure_search: ore_type.encrypt("greta.gerwig@test.com"))
 
         expect(updated_user.length).to eq(1)
         expect(updated_user.first.email_secure_search).to_not be(nil)
@@ -217,12 +219,12 @@ RSpec.describe Protect::Model::CRUD do
       it "creates multiples records with ore and lockbox encrypted values" do
         CrudTesting.upsert_all([
           {
-          dob: Date.new(1969,3,9),
-          last_login: DateTime.new(2022,10,9),
-          age: 53,
-          verified: true,
-          latitude: 150.634496,
-          email: "noah.baumbach@whale.com"
+            dob: Date.new(1969,3,9),
+            last_login: DateTime.new(2022,10,9),
+            age: 53,
+            verified: true,
+            latitude: 150.634496,
+            email: "noah.baumbach@whale.com"
           },
           {
             dob: Date.new(1983,8,4),
@@ -235,14 +237,14 @@ RSpec.describe Protect::Model::CRUD do
         ])
 
         user_one = CrudTesting.where(
-          email_secure_search: ORE_64_8_V1.encrypt("noah.baumbach@whale.com")
+          email_secure_search: ore_type.encrypt("noah.baumbach@whale.com")
         )
         expect(user_one.length).to eq(1)
         expect(user_one.first.email_secure_search).to_not be(nil)
         expect(user_one.first.email).to eq("noah.baumbach@whale.com")
 
         user_two = CrudTesting.where(
-          email_secure_search: ORE_64_8_V1.encrypt("greta.gerwig@test.com")
+          email_secure_search: ore_type.encrypt("greta.gerwig@test.com")
         )
 
         expect(user_two.length).to eq(1)

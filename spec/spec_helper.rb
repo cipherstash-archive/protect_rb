@@ -9,10 +9,8 @@ require "pry-byebug"
 
 require "cipherstash/protect"
 
-include Protect::ActiveRecordExtensions
-
 ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
-ENV["CS_PROTECT_KEY"] = Protect.generate_key
+ENV["CS_PROTECT_KEY"] = CipherStash::Protect.generate_key
 
 RAILS_VERSION = "#{ActiveRecord::VERSION::MAJOR}.#{ActiveRecord::VERSION::MINOR}".to_f
 

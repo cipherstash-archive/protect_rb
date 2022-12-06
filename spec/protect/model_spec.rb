@@ -1,4 +1,4 @@
-RSpec.describe Protect::Model do
+RSpec.describe CipherStash::Protect::Model do
   describe "class methods" do
     context "with no protected attributes" do
       let(:model) {

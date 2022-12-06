@@ -1,25 +1,27 @@
-module Protect
-  module Analysis
-    module TokenFilters
-      class Base
-        def initialize(opts = {})
-          @opts = opts
+module CipherStash
+  module Protect
+    module Analysis
+      module TokenFilters
+        class Base
+          def initialize(opts = {})
+            @opts = opts
+          end
         end
-      end
 
-      class Downcase < Base
-        def perform(str_or_array)
-          Array(str_or_array).map(&:downcase)
+        class Downcase < Base
+          def perform(str_or_array)
+            Array(str_or_array).map(&:downcase)
+          end
         end
-      end
 
-      class NGram < Base
-        def perform(str_or_array)
-          token_length = @opts[:token_length]
-          Array(str_or_array).flat_map do |token|
-            [].tap do |out|
-              (token.length - token_length + 1).times do |i|
-                out << token[i, token_length]
+        class NGram < Base
+          def perform(str_or_array)
+            token_length = @opts[:token_length]
+            Array(str_or_array).flat_map do |token|
+              [].tap do |out|
+                (token.length - token_length + 1).times do |i|
+                  out << token[i, token_length]
+                end
               end
             end
           end
@@ -28,4 +30,3 @@ module Protect
     end
   end
 end
-

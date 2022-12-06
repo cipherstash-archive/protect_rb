@@ -8,7 +8,7 @@ RSpec.describe "A protect customer can encrypt a plaintext field to lockbox and 
       expect(reset_user_one.email_secure_search).to be(nil)
       expect(reset_user_one.email_ciphertext).to be(nil)
 
-      Protect.encrypt(MigrationTesting)
+      CipherStash::Protect.encrypt(MigrationTesting)
 
       migrated_user_one = MigrationTesting.first
 

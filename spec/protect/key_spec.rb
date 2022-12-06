@@ -6,7 +6,7 @@ RSpec.describe "Protect master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = Protect.generate_key
+        ENV['CS_PROTECT_KEY'] = CipherStash::Protect.generate_key
       end
 
       it "raises an error" do
@@ -17,7 +17,7 @@ RSpec.describe "Protect master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(Protect::Error, /Invalid CS_PROTECT_KEY/)
+        )}.to raise_error(CipherStash::Protect::Error, /Invalid CS_PROTECT_KEY/)
       end
     end
 
@@ -27,7 +27,7 @@ RSpec.describe "Protect master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = Protect.generate_key
+        ENV['CS_PROTECT_KEY'] = CipherStash::Protect.generate_key
       end
 
       it "raises an error" do
@@ -38,7 +38,7 @@ RSpec.describe "Protect master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(Protect::Error, /Invalid CS_PROTECT_KEY/)
+        )}.to raise_error(CipherStash::Protect::Error, /Invalid CS_PROTECT_KEY/)
       end
     end
 
@@ -48,7 +48,7 @@ RSpec.describe "Protect master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = Protect.generate_key
+        ENV['CS_PROTECT_KEY'] = CipherStash::Protect.generate_key
       end
 
       it "raises an error" do
@@ -59,7 +59,7 @@ RSpec.describe "Protect master key" do
           verified: true,
           latitude: 150.634496,
           email: "steve.zissou@belafonte.com"
-        )}.to raise_error(Protect::Error, /Invalid CS_PROTECT_KEY/)
+        )}.to raise_error(CipherStash::Protect::Error, /Invalid CS_PROTECT_KEY/)
       end
     end
 
@@ -69,7 +69,7 @@ RSpec.describe "Protect master key" do
       end
 
       after(:each) do
-         ENV['CS_PROTECT_KEY'] = Protect.generate_key
+        ENV['CS_PROTECT_KEY'] = CipherStash::Protect.generate_key
       end
 
       it "does not raise an error" do
