@@ -1,4 +1,4 @@
-require 'protect/analysis/text_processor'
+require 'cipherstash/protect/analysis/text_processor'
 
 RSpec.describe Protect::Analysis::TextProcessor do
   describe "Standard text processor" do

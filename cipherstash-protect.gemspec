@@ -1,10 +1,10 @@
-require_relative 'lib/protect/version'
+require_relative './lib/cipherstash/protect/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "cipherstash-protect"
   spec.version       = Protect::VERSION
   spec.authors       = ["Fi McCawley", "James Sadler"]
-  spec.email         = ["fiona@cipherstash.com", "james@cipherstash.com"]
+  spec.email         = ["fiona@cipherstash.com", "james@cipherstash.com", "robin@cipherstash.com"]
 
   spec.summary       = %q{Add searchable encryption to your rails models}
   spec.description   = %q{This gem wraps the CipherStash order-revealing-encryption library and enhances ActiveRecord to support encrypted search}

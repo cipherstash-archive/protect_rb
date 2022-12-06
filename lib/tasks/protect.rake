@@ -1,4 +1,4 @@
-require_relative '../protect'
+require_relative '../cipherstash/protect'
 
 namespace :protect do
   desc "Encrypt plaintext fields marked as secure search to encrypted columns"

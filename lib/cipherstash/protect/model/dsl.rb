@@ -1,7 +1,8 @@
 require "active_support/concern"
-require "protect/active_record_extensions/bloom_filter_validations"
-require "protect/analysis/token_validations"
 require "uuid"
+
+require_relative "../active_record_extensions/bloom_filter_validations"
+require_relative "../analysis/token_validations"
 
 module Protect
   module Model

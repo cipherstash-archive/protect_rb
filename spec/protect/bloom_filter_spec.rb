@@ -1,4 +1,4 @@
-require "protect/active_record_extensions/bloom_filter"
+require "cipherstash/protect/active_record_extensions/bloom_filter"
 
 RSpec.describe Protect::ActiveRecordExtensions::BloomFilter do
   self::VALID_M_VALUES = [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]

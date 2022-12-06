@@ -1,12 +1,13 @@
 require "bundler/setup"
 require 'rspec/expectations'
 require "active_record"
-require "protect"
 require "lockbox"
 require "debug"
 require "pry"
 require "database_cleaner"
 require "pry-byebug"
+
+require "cipherstash/protect"
 
 include Protect::ActiveRecordExtensions
 
