@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.2.0]
+
+### Fixed
+
+- Filenames and module namespacing, now that this gem is called `cipherstash-protect`.
+
 ## [0.1.0]
 
-## Added
+### Added
 
 - Installation scripts to install custom db ore type.
 - Enable CRUD operations on encrypted columns.
