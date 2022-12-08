@@ -106,7 +106,7 @@ module CipherStash
 
           tokens = text_processor.perform(value)
 
-          bits =filter.add(tokens).to_a
+          bits = filter.add(tokens).to_a
 
           db_config = ActiveRecord::Base.connection_db_config
 

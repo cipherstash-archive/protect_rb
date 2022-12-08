@@ -187,6 +187,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
         bits = filter.add(tokens).postgres_bits_from_native_bits
 
         expect((bits - user.email_secure_text_search).empty?).to be(true)
+        expect(user.email).to eq("steve.zissou@belafonte.com")
       end
     end
 
@@ -203,6 +204,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
         bits = filter.add(tokens).postgres_bits_from_native_bits
 
         expect((bits - user.email_secure_text_search).empty?).to be(true)
+        expect(user.email).to eq("steve.zissou@belafonte.com")
       end
     end
 

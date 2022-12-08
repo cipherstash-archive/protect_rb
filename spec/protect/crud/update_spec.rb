@@ -253,4 +253,143 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
       end
     end
   end
+
+  describe "Updates bloom filter encrypted column" do
+    # TODO Update to use where clause when querying implemented, using subset checks in the interim
+    VALID_BLOOM_FILTER_ID = "4f108250-53f8-013b-0bb5-0e015c998818"
+    FILTER_SIZE = 256
+    FILTER_TERM_BITS = 3
+    TOKEN_FILTERS = [{kind: :downcase}, {kind: :ngram, token_length: 3}]
+    TOKENIZER = { kind: :standard }
+
+    let(:model) {
+      Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+
+        secure_text_search :email,
+          filter_size: FILTER_SIZE,filter_term_bits: FILTER_TERM_BITS,
+          bloom_filter_id: VALID_BLOOM_FILTER_ID,
+          tokenizer: TOKENIZER,
+          token_filters: TOKEN_FILTERS
+      end
+    }
+
+    let(:filter) {
+      CipherStash::Protect::ActiveRecordExtensions::BloomFilter.new(VALID_BLOOM_FILTER_ID,
+        {
+          filter_size: FILTER_SIZE,
+          filter_term_bits: FILTER_TERM_BITS
+        }
+      )
+    }
+
+    let(:text_processor) {
+      CipherStash::Protect::Analysis::TextProcessor.new(
+        {
+          token_filters: TOKEN_FILTERS,
+          tokenizer: TOKENIZER
+        }
+      )
+    }
+
+    context "when using #update" do
+      it "updates the bloom filter and lockbox encrypted values in a single record" do
+        user_one = model.create!(
+          email: "wes.anderson@rushmore.com"
+        )
+
+        model.update(user_one.id, email: "owen.wilson@bottlerocket.com")
+
+        updated_user = model.find_by(id: user_one.id)
+
+        tokens = text_processor.perform("owen.wilson@bottlerocket.com")
+        bits = filter.add(tokens).postgres_bits_from_native_bits
+
+        expect((bits - updated_user.email_secure_text_search).empty?).to be(true)
+        expect(updated_user.email).to eq("owen.wilson@bottlerocket.com")
+      end
+    end
+
+    if RAILS_VERSION >= 7
+      context "when using #update!" do
+        it "updates the bloom filter and lockbox encrypted values in a single record" do
+          user_one = model.create!(
+            email: "wes.anderson@rushmore.com"
+          )
+
+          model.update!(user_one.id, email: "owen.wilson@bottlerocket.com")
+
+          updated_user = model.find_by(id: user_one.id)
+
+          tokens = text_processor.perform("owen.wilson@bottlerocket.com")
+          bits = filter.add(tokens).postgres_bits_from_native_bits
+
+          expect((bits - updated_user.email_secure_text_search).empty?).to be(true)
+          expect(updated_user.email).to eq("owen.wilson@bottlerocket.com")
+        end
+      end
+    end
+
+    context "when using #upsert" do
+      it "updates a single record with bloom filter and lockbox encrypted values" do
+        user_one = model.create!(
+          email: "wes.anderson@rushmore.com"
+        )
+
+        model.upsert({
+          id: user_one.id,
+          email: "greta.gerwig@test.com"
+        })
+
+        updated_user = model.find_by(id: user_one.id)
+
+        tokens = text_processor.perform("greta.gerwig@test.com")
+        bits = filter.add(tokens).postgres_bits_from_native_bits
+
+        expect((bits - updated_user.email_secure_text_search).empty?).to be(true)
+        expect(updated_user.email).to eq("greta.gerwig@test.com")
+      end
+
+      it "creates a single record with bloom filter and lockbox encrypted values", :skip => "add when bloom filter querying added" do
+      end
+    end
+
+    context "when using #upsert_all" do
+      it "updates multiple records with bloom filter and lockbox encrypted values" do
+        user_one = model.create!(
+          email: "wes.anderson@rushmore.com"
+        )
+
+        model.upsert_all([{
+          id: user_one.id,
+          email: "greta.gerwig@test.com"
+        }])
+
+        updated_user = model.find_by(id: user_one.id)
+
+        tokens = text_processor.perform("greta.gerwig@test.com")
+        bits = filter.add(tokens).postgres_bits_from_native_bits
+
+        expect((bits - updated_user.email_secure_text_search).empty?).to be(true)
+        expect(updated_user.email).to eq("greta.gerwig@test.com")
+      end
+
+      it "creates records with bloom filter and lockbox encrypted values" do
+        model.upsert_all([
+          {
+            email: "noah.baumbach@whale.com"
+          }
+        ])
+
+        users = model.all
+        expect(users.length).to eq(1)
+
+
+        tokens = text_processor.perform("noah.baumbach@whale.com")
+        bits = filter.add(tokens).postgres_bits_from_native_bits
+        expect(users.first.email).to eq("noah.baumbach@whale.com")
+        expect((bits - users.first.email_secure_text_search).empty?).to be(true)
+      end
+    end
+  end
 end
