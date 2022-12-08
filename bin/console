@@ -2,11 +2,11 @@
 
 require "bundler/setup"
 require "active_record"
-require "protect"
+require "cipherstash/protect"
 require "lockbox"
 
 ENV["LOCKBOX_MASTER_KEY"] = Lockbox.generate_key
-ENV["CS_PROTECT_KEY"] = Protect.generate_key
+ENV["CS_PROTECT_KEY"] = CipherStash::Protect.generate_key
 
 ActiveRecord::Base.establish_connection(
   adapter: 'postgresql',
@@ -17,7 +17,7 @@ ActiveRecord::Base.establish_connection(
 )
 
 require './spec/support/models/crud_testing'
-include Protect::ActiveRecordExtensions
+include CipherStash::Protect::ActiveRecordExtensions
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
