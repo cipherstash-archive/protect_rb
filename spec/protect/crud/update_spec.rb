@@ -1,7 +1,7 @@
 RSpec.describe CipherStash::Protect::Model::CRUD do
   let(:ore_type) { CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1 }
 
-  describe "Updates" do
+  describe "Updates ore encrypted column" do
     before(:each) do
       CrudTesting.create!(
         dob: Date.new(1970,6,26),
