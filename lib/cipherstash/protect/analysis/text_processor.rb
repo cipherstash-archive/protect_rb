@@ -16,7 +16,7 @@ module CipherStash
         # TextProcessor.new({
         #   token_filters: [
         #     {kind: :downcase},
-        #     {kind: :ngram, token_length: 3}
+        #     {kind: :ngram, min_length: 3, max_length: 8}
         #   ],
         #   tokenizer: {kind: :standard}
         # })
@@ -47,7 +47,12 @@ module CipherStash
               TokenFilters::Downcase.new(obj)
 
             when :ngram
-              raise CipherStash::Protect::Error, "Token length not provided. Please specify token length using '{kind: :ngram, tokenLength: 3}'" unless obj[:token_length]
+              unless obj[:min_length] && obj[:max_length]
+                raise CipherStash::Protect::Error, "Min length and max length not provided with ngram filter. Please specify ngram token length using '{kind: :ngram, min_length: 3, max_length: 8}'"
+              end
+
+              # TODO check max is >= min
+              # TODO check min and max values are integers and not nil
 
               TokenFilters::NGram.new(obj)
 

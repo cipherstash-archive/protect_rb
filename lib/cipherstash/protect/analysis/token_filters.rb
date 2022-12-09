@@ -22,6 +22,16 @@ module CipherStash
                 (token.length - token_length + 1).times do |i|
                   out << token[i, token_length]
                 end
+
+                a, b, c, *rest = token.split("")
+                init_ngram = [[a, b, c].join]
+
+                edge_ngram =
+                  rest.reduce(init_ngram) do |acc, char|
+                  acc.push(acc.last + char)
+                end
+
+                out.concat(edge_ngram)
               end
             end
           end

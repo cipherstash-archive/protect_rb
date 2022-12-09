@@ -43,7 +43,7 @@ RSpec.describe CipherStash::Protect::Analysis::TextProcessor do
     end
   end
 
-  describe "Standard text processor with ngram filter" do
+  describe "Standard text processor with ngram and edge_ngram filter" do
     it "splits text into ngrams using token length of 3" do
       tokenizer =
         CipherStash::Protect::Analysis::TextProcessor.new({
@@ -53,8 +53,8 @@ RSpec.describe CipherStash::Protect::Analysis::TextProcessor do
           ],
           tokenizer: { kind: :standard }
         })
-      result = tokenizer.perform("This is an example of an ngram filter")
-      expect(result).to eq(["thi", "his", "exa", "xam", "amp", "mpl", "ple", "ngr", "gra", "ram", "fil", "ilt", "lte", "ter"])
+      result = tokenizer.perform("Example filter")
+      expect(result).to eq(["exa", "xam", "amp", "mpl", "ple", "exa", "exam", "examp", "exampl", "example", "fil", "ilt", "lte", "ter", "fil", "filt", "filte", "filter"])
     end
 
     it "raises an error if a token length is not provided" do
