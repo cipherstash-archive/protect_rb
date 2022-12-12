@@ -1,6 +1,3 @@
-require_relative "./token_filters"
-require_relative "./tokenizer"
-
 # Implementation copied over from the Ruby Client
 # https://github.com/cipherstash/ruby-client/blob/main/lib/cipherstash/analysis/text_processor.rb
 module CipherStash

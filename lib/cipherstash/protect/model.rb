@@ -1,4 +1,6 @@
 require "active_support/concern"
+require "lockbox"
+
 require_relative "./model/dsl"
 require_relative "./model/crud"
 
@@ -6,6 +8,7 @@ module CipherStash
   module Protect
     module Model
       extend ActiveSupport::Concern
+
       include CipherStash::Protect::Model::DSL
       include CipherStash::Protect::Model::CRUD
 

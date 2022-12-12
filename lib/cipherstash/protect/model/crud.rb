@@ -1,6 +1,4 @@
 require "active_support/concern"
-require "cipherstash/protect/active_record_extensions/bloom_filter"
-require "cipherstash/protect/analysis/text_processor"
 
 module CipherStash
   module Protect
@@ -97,7 +95,7 @@ module CipherStash
         private
 
         def self.filter_bits(bloom_filter_id, filter_options, value)
-          filter = CipherStash::Protect::ActiveRecordExtensions::BloomFilter.new(bloom_filter_id, { filter_size: filter_options[:filter_size], filter_term_bits: filter_options[:filter_term_bits] })
+          filter = CipherStash::Protect::Query::BloomFilter.new(bloom_filter_id, { filter_size: filter_options[:filter_size], filter_term_bits: filter_options[:filter_term_bits] })
 
           text_processor = CipherStash::Protect::Analysis::TextProcessor.new({
             token_filters: filter_options[:token_filters],

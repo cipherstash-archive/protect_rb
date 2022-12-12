@@ -275,7 +275,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
     }
 
     let(:filter) {
-      CipherStash::Protect::ActiveRecordExtensions::BloomFilter.new(VALID_BLOOM_FILTER_ID,
+      CipherStash::Protect::Query::BloomFilter.new(VALID_BLOOM_FILTER_ID,
         {
           filter_size: FILTER_SIZE,
           filter_term_bits: FILTER_TERM_BITS

@@ -1,5 +1,3 @@
-require 'cipherstash/protect/analysis/text_processor'
-
 RSpec.describe CipherStash::Protect::Analysis::TextProcessor do
   describe "Standard text processor" do
     it "splits text based on word boundaries" do

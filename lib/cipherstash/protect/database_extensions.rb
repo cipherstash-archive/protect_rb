@@ -1,3 +1,5 @@
+require_relative "./database_extensions/postgresql"
+
 module CipherStash
   module Protect
     module DatabaseExtensions

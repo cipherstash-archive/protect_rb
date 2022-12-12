@@ -1,6 +1,4 @@
-require "cipherstash/protect/active_record_extensions/bloom_filter"
-
-RSpec.describe CipherStash::Protect::ActiveRecordExtensions::BloomFilter do
+RSpec.describe CipherStash::Protect::Query::BloomFilter do
   self::VALID_M_VALUES = [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
   self::VALID_K_VALUES = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 

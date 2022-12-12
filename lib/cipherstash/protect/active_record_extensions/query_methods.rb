@@ -1,6 +1,6 @@
 module CipherStash
   module Protect
-    module Model
+    module ActiveRecordExtensions
       module QueryMethods
         # Intercepts the order call to update any virtual attributes to use the
         # searchable attribute field.

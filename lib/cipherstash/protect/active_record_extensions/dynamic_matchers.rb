@@ -1,6 +1,6 @@
 module CipherStash
   module Protect
-    module Model
+    module ActiveRecordExtensions
       module DynamicMatchers
         def valid?
           attribute_names.all? { |name|

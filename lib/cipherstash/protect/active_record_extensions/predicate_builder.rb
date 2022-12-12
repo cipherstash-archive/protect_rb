@@ -1,6 +1,6 @@
 module CipherStash
   module Protect
-    module Model
+    module ActiveRecordExtensions
       module PredicateBuilder
         include CipherStash::Protect::ActiveRecordExtensions
 

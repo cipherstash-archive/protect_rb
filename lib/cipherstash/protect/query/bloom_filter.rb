@@ -1,10 +1,9 @@
 require "hkdf"
 require "openssl"
-require_relative "./bloom_filter_validations"
 
 module CipherStash
   module Protect
-    module ActiveRecordExtensions
+    module Query
       # A bloom filter implementation designed to be used with *secure_text_search fields
       class BloomFilter
         # The min and max values for k and m:

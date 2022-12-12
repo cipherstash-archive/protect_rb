@@ -1,3 +1,5 @@
+require 'ore-rs'
+
 module CipherStash
   module Protect
     module ActiveRecordExtensions
