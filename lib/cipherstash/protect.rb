@@ -1,16 +1,15 @@
-require 'active_support'
-require 'active_record'
-require 'lockbox'
-require 'securerandom'
-require 'ore-rs'
-require 'progress_bar'
+require "active_support"
+require "active_record"
+require "securerandom"
+require "progress_bar"
 
-require_relative './protect/model'
-
-require_relative './protect/active_record_extensions'
-require_relative './protect/database_extensions'
-require_relative './protect/logger'
-require_relative './protect/railtie' if defined?(Rails::Railtie)
+require_relative "./protect/active_record_extensions"
+require_relative "./protect/analysis"
+require_relative "./protect/database_extensions"
+require_relative "./protect/logger"
+require_relative "./protect/model"
+require_relative "./protect/query"
+require_relative "./protect/railtie" if defined?(Rails::Railtie)
 
 module CipherStash
   module Protect
@@ -55,5 +54,29 @@ module CipherStash
         end
       end
     end
+  end
+end
+
+if defined?(ActiveSupport.on_load)
+  ActiveSupport.on_load(:active_record) do
+    ActiveRecord::Base.include CipherStash::Protect::Model
+
+    ActiveRecord::DynamicMatchers::Method.prepend(CipherStash::Protect::ActiveRecordExtensions::DynamicMatchers)
+    ActiveRecord::PredicateBuilder.prepend(CipherStash::Protect::ActiveRecordExtensions::PredicateBuilder)
+    ActiveRecord::Relation.prepend(CipherStash::Protect::ActiveRecordExtensions::QueryMethods)
+    ActiveRecord::Validations::UniquenessValidator.prepend(CipherStash::Protect::ActiveRecordExtensions::UniquenessValidator)
+
+    require "active_record/connection_adapters/postgresql_adapter"
+
+    ActiveRecord::Type.register(
+      "ore_64_8_v1",
+      CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1_Type,
+      override: true,
+      adapter: :postgresql
+    )
+
+    ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(
+      CipherStash::Protect::DatabaseExtensions::Postgresql::ConnectionAdapter
+    )
   end
 end

@@ -1,6 +1,6 @@
 module CipherStash
   module Protect
-    module ActiveRecordExtensions
+    module Query
       module BloomFilterValidations
         M_MIN = 32
         M_MAX = 65536

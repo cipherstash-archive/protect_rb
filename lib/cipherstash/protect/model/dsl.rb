@@ -1,9 +1,6 @@
 require "active_support/concern"
 require "uuid"
 
-require_relative "../active_record_extensions/bloom_filter_validations"
-require_relative "../analysis/token_validations"
-
 module CipherStash
   module Protect
     module Model
@@ -137,11 +134,11 @@ module CipherStash
           end
 
           def bloom_filter_settings?(options)
-            valid_filter_options = Protect::ActiveRecordExtensions::BloomFilterValidations.valid_filter_options?(options)
+            valid_filter_options = Protect::Query::BloomFilterValidations.valid_filter_options?(options)
             m = options.fetch(:filter_size, nil)
             k = options.fetch(:filter_term_bits, nil)
 
-            valid_filter_options && Protect::ActiveRecordExtensions::BloomFilterValidations.valid_m?(m) && Protect::ActiveRecordExtensions::BloomFilterValidations.valid_k?(k)
+            valid_filter_options && Protect::Query::BloomFilterValidations.valid_m?(m) && Protect::Query::BloomFilterValidations.valid_k?(k)
           end
 
           def text_analysis_settings?(options)
