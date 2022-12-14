@@ -9,6 +9,8 @@ class CreateUsersTableForCrudTesting < ActiveRecord::Migration[RAILS_VERSION]
       t.text :latitude_ciphertext
 
       t.column :email_secure_search, :ore_64_8_v1
+      t.column :email_secure_text_search, :integer, limit: 2, array: true
+
       t.column :dob_secure_search, :ore_64_8_v1
       t.column :last_login_secure_search, :ore_64_8_v1
       t.column :age_secure_search, :ore_64_8_v1

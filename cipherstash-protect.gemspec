@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "ore-rs", "~> 0.7.0"
   spec.add_runtime_dependency "progress_bar"
   spec.add_runtime_dependency "uuid"
+  spec.add_runtime_dependency "hkdf", "~>1.0"
 
   spec.add_development_dependency 'pg'
   spec.add_development_dependency 'pry'

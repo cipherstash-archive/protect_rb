@@ -1,3 +1,4 @@
+require "hkdf"
 require "openssl"
 require_relative "./bloom_filter_validations"
 
@@ -35,34 +36,58 @@ module CipherStash
         # @return [Integer]
         attr_reader :k
 
+        # Postgres does not support unsigned ints. The max signed small int
+        # value is 32767.
+        #
+        # To be able to store values up to 2 ^ 16 (65536) we need to offset each
+        # bit position by -32_768 when storing and querying bloom filters.
+        # @return [Integer]
+        attr_reader :postgres_offset
+
         # Creates a new bloom filter with the given key and filter match index settings.
         #
-        # @param key [String] the key to use for hashing terms. Should be provided as a hex-encoded string.
+        # @param id [String] the id that is used with the local key to derive a key for hashing. Should be provided as a uuid.
         #
         # @param opts [Hash] the index settings.
         #   "filter_size" and "filter_term_bits" are used to set the m and k attrs respectively.
         #
         # ## Example
         #
-        # BloomFilter.new(key, {filter_size: 256, filter_term_bits: 3})
+        # BloomFilter.new(id, {filter_size: 256, filter_term_bits: 3})
         #
         # @raise [CipherStash::Protect::Error] if opts not provided, or invalid filter_size or filter_term_bits.
-        def initialize(key, opts = {})
+        def initialize(id, opts = {})
           unless opts.size > 1 && BloomFilterValidations.valid_filter_options?(opts)
             raise CipherStash::Protect::Error, "Invalid options provided. Expected filter_size and filter_term_bits."
           end
 
+          rails_credentials_key = nil
+
+          if defined?(Rails.application.credentials)
+            rails_credentials_key = Rails.application.credentials.try(:protect).try(:fetch, :cs_protect_key, nil)
+          end
+
+          key = rails_credentials_key || ENV["CS_PROTECT_KEY"]
+
           unless hex_string?(key)
-            raise CipherStash::Protect::Error, "expected bloom filter key to be a hex-encoded string (got #{key.inspect})"
+            raise CipherStash::Protect::Error, "Invalid CS_PROTECT_KEY. Use rake protect:generate_keys to create a key, (got #{key.inspect})"
           end
 
-          @key = [key].pack("H*")
-
-          unless @key.length == 32
-            raise CipherStash::Protect::Error, "expected bloom filter key to have length=32, got length=#{@key.length}"
+          unless valid_uuid?(id)
+            raise CipherStash::Protect::Error, "expected id key to be a valid uuid (got #{id.inspect})"
           end
+
+          unless key.length == 64
+            raise CipherStash::Protect::Error, "Expected CS_PROTECT_KEY key to have length=64, got length=#{key.length}. Use rake protect:generate_keys to create a key."
+          end
+
+          derived_key = HKDF.new(key, :info => id)
+
+          @key = derived_key.read(32)
 
           @bits = Set.new()
+
+          @postgres_offset = 32768
 
           @m = opts.fetch(:filter_size)
 
@@ -103,6 +128,15 @@ module CipherStash
           @bits.to_a
         end
 
+        # Returns the bits offset by the @bloom_filter_offset value as an array
+        #
+        # @return [CipherStash::Protect::ActiveRecordExtensions::BloomFilter]
+        def postgres_bits_from_native_bits
+          @bits.map do |b|
+            b - @postgres_offset
+          end
+        end
+
         private
 
         def add_single_term(term)
@@ -124,7 +158,11 @@ module CipherStash
         end
 
         def hex_string?(val)
-          val.instance_of?(String) and /\A\h*\z/.match?(val)
+          val.instance_of?(String) and /\A\h*\z/.match?(val) && val.length > 0
+        end
+
+        def valid_uuid?(id)
+          UUID.validate(id)
         end
       end
     end

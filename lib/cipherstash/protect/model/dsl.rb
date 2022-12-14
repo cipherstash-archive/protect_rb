@@ -52,6 +52,8 @@ module CipherStash
             end
           end
 
+          # TODO: Make it easier to provide options
+          # eg update syntax for provided hash to remove 'kind' keys.
           def secure_text_search(attribute, **options)
             type = options.delete(:type) || :string
             column_name = "#{attribute}_secure_text_search"
