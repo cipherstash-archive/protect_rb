@@ -51,8 +51,13 @@ module CipherStash
                 raise CipherStash::Protect::Error, "Min length and max length not provided with ngram filter. Please specify ngram token length using '{kind: :ngram, min_length: 3, max_length: 8}'"
               end
 
-              # TODO check max is >= min
-              # TODO check min and max values are integers and not nil
+              unless obj[:min_length].instance_of?(Integer) && obj[:max_length].instance_of?(Integer)
+                raise CipherStash::Protect::Error, "The values provided to the min and max length must be of type Integer."
+              end
+
+              unless obj[:max_length] >= obj[:min_length]
+                 raise CipherStash::Protect::Error, "The ngram filter min length must be less than or equal to the max length"
+              end
 
               TokenFilters::NGram.new(obj)
 
