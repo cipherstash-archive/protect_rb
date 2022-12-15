@@ -141,7 +141,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
-              {kind: :ngram, token_length: 3}
+              {kind: :ngram, min_length: 3, max_length: 8}
             ]
           )
         }.to raise_error(CipherStash::Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
@@ -162,7 +162,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
-              {kind: :ngram, token_length: 3}
+              {kind: :ngram, min_length: 3, max_length: 8}
             ]
           )
         }.to raise_error(CipherStash::Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
@@ -175,7 +175,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
-              {kind: :ngram, token_length: 3}
+              {kind: :ngram, min_length: 3, max_length: 8}
             ]
           )
         }.to raise_error(CipherStash::Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
@@ -190,7 +190,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             tokenizer: { kind: :non_standard },
             token_filters: [
               {kind: :downcase},
-              {kind: :ngram, token_length: 3}
+              {kind: :ngram, min_length: 3, max_length: 8}
             ]
           )
         }.to raise_error(CipherStash::Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
@@ -210,7 +210,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
         }.to raise_error(CipherStash::Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
-      it "raises an error when an ngram filter is specified without token_length" do
+      it "raises an error when an ngram filter is specified without min_length and max_length" do
         expect {
           model.secure_text_search(
             :full_name,
@@ -225,7 +225,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
       end
 
       ["3", nil, { test: "something"}, "test", Object.new].each do |t|
-        it "raises an error when an ngram filter is specified with an invalid token_length #{t.inspect}" do
+        it "raises an error when an ngram filter is specified with an invalid min or max length #{t.inspect}" do
           expect {
             model.secure_text_search(
               :full_name,
@@ -233,11 +233,25 @@ RSpec.describe CipherStash::Protect::Model::DSL do
               filter_term_bits: 3,
               tokenizer: { kind: :standard },
               token_filters: [
-                {kind: :ngram, token_length: t}
+                {kind: :ngram, min_length: t, max_length: t}
               ]
             )
           }.to raise_error(CipherStash::Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
         end
+      end
+
+      it "raises an error when an ngram filter max length < min length" do
+          expect {
+            model.secure_text_search(
+              :full_name,
+              filter_size: 256,
+              filter_term_bits: 3,
+              tokenizer: { kind: :standard },
+              token_filters: [
+                {kind: :ngram, min_length: 5, max_length: 4}
+              ]
+            )
+          }.to raise_error(CipherStash::Protect::Error, "Invalid secure_text_search options provided in model for attribute 'full_name'.")
       end
 
       it "raises an error if a bloom filter id is not set" do
@@ -249,7 +263,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
-              {kind: :ngram, token_length: 3}
+              {kind: :ngram, min_length: 3, max_length: 8}
             ]
           )
         }.to raise_error(CipherStash::Protect::Error, "Bloom filter id has not been set. Specify 'bloom_filter_id' with a valid uuid as part of the options for attribute 'full_name'.")
@@ -265,7 +279,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
-              {kind: :ngram, token_length: 3}
+              {kind: :ngram, min_length: 3, max_length: 8}
             ]
           )
         }.to raise_error(CipherStash::Protect::Error, "Bloom filter id has not been set. Specify 'bloom_filter_id' with a valid uuid as part of the options for attribute 'full_name'.")
@@ -281,7 +295,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
-              {kind: :ngram, token_length: 3}
+              {kind: :ngram, min_length: 3, max_length: 8}
             ]
           )
         }.to_not raise_error

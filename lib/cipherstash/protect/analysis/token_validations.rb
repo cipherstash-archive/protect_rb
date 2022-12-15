@@ -23,9 +23,10 @@ module CipherStash
         end
 
         def self.valid_token_length?(token_filters)
-          token_length = token_filters.select { |f| f.has_key?(:token_length) }
+          min_length = token_filters.select { |f| f.has_key?(:min_length ) }
+          max_length = token_filters.select { |f| f.has_key?(:max_length ) }
 
-          token_length.instance_of?(Integer)
+          min_length.instance_of?(Integer) && max_length.instance_of?(Integer) && max_length >= min_length
         end
       end
     end
