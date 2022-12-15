@@ -22,7 +22,6 @@ module CipherStash
             Array(str_or_array).flat_map do |token|
               token_length = token.length
 
-
               ngrams = [].tap do |out|
                 (min_length..max_length).each do |n|
                   ngram = token.chars.each_cons(n).map(&:join)

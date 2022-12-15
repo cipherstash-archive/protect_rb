@@ -57,7 +57,7 @@ RSpec.describe CipherStash::Protect::Analysis::TextProcessor do
     end
 
     ["1", { foo: "bar" }, Object.new].each do |length|
-      it "raises and error if invalid length of #{length.inspect} provided" do
+      it "raises an error if invalid length of #{length.inspect} provided" do
         expect {
           CipherStash::Protect::Analysis::TextProcessor.new({
             token_filters:[
@@ -70,7 +70,7 @@ RSpec.describe CipherStash::Protect::Analysis::TextProcessor do
       end
     end
 
-    it "raises and error if the min length is greater than the max length" do
+    it "raises an error if the min length is greater than the max length" do
       expect {
           CipherStash::Protect::Analysis::TextProcessor.new({
             token_filters:[
