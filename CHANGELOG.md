@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Create and update operation using bloom filters.
 
+### Fixed
+
+- Ngram tokenization to use min and max length.
+
 ## [0.2.0]
 
 ### Fixed
