@@ -1,5 +1,5 @@
 RSpec.describe CipherStash::Protect::Model::CRUD do
-  describe "Read" do
+  describe "Read secure_search" do
     before(:each) do
       CrudTesting.create!([
         {
@@ -527,6 +527,79 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
 
         expect(users.length).to eq(3)
         expect(users.first.age).to eq(72)
+      end
+    end
+  end
+
+  describe "Read secure_text_search" do
+    let(:model) {
+      Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+
+        secure_text_search :email,
+          filter_size: 1024, filter_term_bits: 6,
+          bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998817",
+          tokenizer: { kind: :standard },
+          token_filters: [{kind: :downcase}, {kind: :ngram, min_length: 3, max_length: 8}]
+      end
+    }
+
+    context "when using a match query" do
+      it "raises an error if no query arg is passed" do
+        expect {
+          model.match()
+        }.to raise_error(CipherStash::Protect::Error, "Unable to execute text match query. Incorrect args passed. Example usage: model.match(email: 'test')")
+      end
+
+      [nil, 2, Object.new(), {foo: "bar"}, 2.3, []].each do |type|
+        it "raises an error if type #{type.inspect} is passed" do
+
+          expect {
+            model.match(email: type)
+          }.to raise_error(CipherStash::Protect::Error, "Value passed to match query must be of type String. Got #{type.inspect()}.")
+        end
+      end
+
+      it "returns records when using partial string as value" do
+        model.insert_all([
+           { email: "danna@cummings.info" },
+           { email: "marybeth@kertzmann-bailey.org" },
+           { email: "mariann@williamson.org" },
+           { email: "marissa@hartmann.com" },
+           { email: "dannie@hahn.name" },
+        ])
+
+        expect(model.all.length).to eq(5)
+
+        users = model.match(email: "dan").sort()
+
+        expect(users.length).to eq(2)
+        expect(users.first.email).to eq("danna@cummings.info")
+        expect(users.second.email).to eq("dannie@hahn.name")
+      end
+
+      it "returns records when using a combination of raw sql query and match query" do
+        model.insert_all([
+           { full_name: "Danna Cummings", email: "danna@cummings.info" },
+           { full_name: "Mary Bailey", email: "marybeth@kertzmann-bailey.org" },
+           { full_name: "Mariann Williamson", email: "mariann@williamson.org" },
+           { full_name: "Marissa Hartman", email: "marissa@hartmann.com" },
+           { full_name: "Dannie Hahn", email: "dannie@hahn.name" },
+           { full_name: "Greta Gerwig", email: "greta@gerwig.com" },
+        ])
+        q = "Greta"
+        criteria = "%#{q.downcase}%"
+
+        query = <<~SQL.squish
+          (lower(full_name) like ?)
+        SQL
+
+        users = model.where(query, criteria).or(model.match(email: "dan")).sort()
+
+        expect(users.length).to eq(3)
+        expect(users.first.email).to eq("danna@cummings.info")
+        expect(users.second.email).to eq("dannie@hahn.name")
+        expect(users.last.email).to eq("greta@gerwig.com")
       end
     end
   end
