@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 rutie = "0.8.4"
+
+[lib]
+name = "ciphertext_sdk_test"
+crate-type = ["cdylib"]
