@@ -16,13 +16,22 @@ module CipherStash
 
         class NGram < Base
           def perform(str_or_array)
-            token_length = @opts[:token_length]
+            min_length = @opts[:min_length]
+            max_length = @opts[:max_length]
+
             Array(str_or_array).flat_map do |token|
-              [].tap do |out|
-                (token.length - token_length + 1).times do |i|
-                  out << token[i, token_length]
+              token_length = token.length
+
+              ngrams = [].tap do |out|
+                (min_length..max_length).each do |n|
+                  ngram = token.chars.each_cons(n).map(&:join)
+                  out << ngram
+                end
+                if token_length > max_length
+                  out << token
                 end
               end
+              ngrams.flatten
             end
           end
         end

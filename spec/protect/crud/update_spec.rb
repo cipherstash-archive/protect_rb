@@ -259,7 +259,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
     VALID_BLOOM_FILTER_ID = "4f108250-53f8-013b-0bb5-0e015c998818"
     FILTER_SIZE = 256
     FILTER_TERM_BITS = 3
-    TOKEN_FILTERS = [{kind: :downcase}, {kind: :ngram, token_length: 3}]
+    TOKEN_FILTERS = [{kind: :downcase}, {kind: :ngram, min_length: 3, max_length: 8}]
     TOKENIZER = { kind: :standard }
 
     let(:model) {
