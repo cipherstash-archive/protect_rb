@@ -57,7 +57,6 @@ module CipherStash
           end
 
           def match(arg = {})
-            # binding.pry
             unless arg.size == 1
               raise CipherStash::Protect::Error, "Unable to execute text match query. Incorrect args passed. Example usage: model.match(email: 'test')"
             end
