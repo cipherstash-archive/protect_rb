@@ -1,6 +1,7 @@
 class CreateUsersTableForCrudTesting < ActiveRecord::Migration[RAILS_VERSION]
   def change
     create_table :users_for_crud_testing do |t|
+      t.text :full_name
       t.text :email_ciphertext
       t.text :dob_ciphertext
       t.text :last_login_ciphertext
