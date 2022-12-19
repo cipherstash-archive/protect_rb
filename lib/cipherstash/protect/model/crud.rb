@@ -66,10 +66,10 @@ module CipherStash
             end
 
             virt_attr = arg.keys.first
-            searchable_text_attr = protect_search_attrs[virt_attr].fetch(:searchable_text_attribute)&.keys&.first
+            searchable_text_attr = protect_search_attrs[virt_attr]&.fetch(:searchable_text_attribute, nil)&.keys&.first
 
             unless searchable_text_attr
-              raise CipherStash::Protect::Error, "Unable to execute text match query. Attribute does not have a secure_text_search column."
+              raise CipherStash::Protect::Error, "Unable to execute text match query. Attribute: #{virt_attr.to_s} does not have a secure_text_search column."
             end
 
             filter_options = protect_search_attrs[virt_attr][:searchable_text_attribute].fetch(searchable_text_attr)

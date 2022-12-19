@@ -544,6 +544,12 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
       end
     }
 
+    let(:model_without_secure_text_search) {
+      Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+      end
+    }
+
     context "when using a match query" do
       it "raises an error if no query arg is passed" do
         expect {
@@ -558,6 +564,12 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
             model.match(email: type)
           }.to raise_error(CipherStash::Protect::Error, "Value passed to match query must be of type String. Got #{type.inspect()}.")
         end
+      end
+
+      it "raises and error if a match query is made on an attribute that isn't a searchabl text attribute" do
+        expect {
+          model_without_secure_text_search.match(full_name: "John")
+        }.to raise_error(CipherStash::Protect::Error, "Unable to execute text match query. Attribute: full_name does not have a secure_text_search column.")
       end
 
       it "returns records when using partial string as value" do
