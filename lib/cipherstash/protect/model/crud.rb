@@ -55,6 +55,31 @@ module CipherStash
               attributes
             end
           end
+
+          def match(arg = {})
+            # binding.pry
+            unless arg.size == 1
+              raise CipherStash::Protect::Error, "Unable to execute text match query. Incorrect args passed. Example usage: model.match(email: 'test')"
+            end
+
+            unless arg.values.first.instance_of?(String)
+              raise CipherStash::Protect::Error, "Value passed to match query must be of type String. Got #{arg.values.first.inspect()}."
+            end
+
+            virt_attr = arg.keys.first
+            searchable_text_attr = protect_search_attrs[virt_attr].fetch(:searchable_text_attribute)&.keys&.first
+
+            unless searchable_text_attr
+              raise CipherStash::Protect::Error, "Unable to execute text match query. Attribute does not have a secure_text_search column."
+            end
+
+            filter_options = protect_search_attrs[virt_attr][:searchable_text_attribute].fetch(searchable_text_attr)
+            bloom_filter_id = filter_options.fetch(:bloom_filter_id)
+
+            bits = CRUD.filter_bits(bloom_filter_id, filter_options, arg[virt_attr])
+
+            self.where("#{searchable_text_attr} @> ?", "{#{bits.join(",")}}")
+          end
         end
 
         def _create_record(*)
