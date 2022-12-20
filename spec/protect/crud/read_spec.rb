@@ -566,7 +566,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
         end
       end
 
-      it "raises and error if a match query is made on an attribute that isn't a searchabl text attribute" do
+      it "raises error if a match query is made on an attribute that isn't a searchabl text attribute" do
         expect {
           model_without_secure_text_search.match(full_name: "John")
         }.to raise_error(CipherStash::Protect::Error, "Unable to execute text match query. Attribute: full_name does not have a secure_text_search column.")
