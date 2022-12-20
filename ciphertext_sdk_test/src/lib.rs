@@ -3,10 +3,10 @@ extern crate rutie;
 
 use rutie::{Class, Object, RString, VM};
 
-class!(CiphertextSdkTest);
+class!(Ciphertext);
 
 methods!(
-    CiphertextSdkTest,
+    Ciphertext,
     _rtself,
 
     fn pub_reverse(input: RString) -> RString {
@@ -26,8 +26,8 @@ methods!(
 
 #[allow(non_snake_case)]
 #[no_mangle]
-pub extern "C" fn Init_rutie_ruby_example() {
-    Class::new("CiphertextSdkTest", None).define(|klass| {
+pub extern "C" fn Init_ciphertext_sdk_test() {
+    Class::new("Ciphertext", None).define(|klass| {
         klass.def_self("reverse", pub_reverse);
     });
 }
