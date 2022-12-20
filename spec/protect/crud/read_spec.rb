@@ -535,7 +535,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
     let(:model) {
       Class.new(ActiveRecord::Base) do
         self.table_name = CrudTesting.table_name
-
+        secure_search :email
         secure_text_search :email,
           filter_size: 1024, filter_term_bits: 6,
           bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998817",
@@ -574,30 +574,32 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
 
       it "returns records when using partial string as value" do
         model.insert_all([
-           { email: "danna@cummings.info" },
-           { email: "marybeth@kertzmann-bailey.org" },
-           { email: "mariann@williamson.org" },
-           { email: "marissa@hartmann.com" },
-           { email: "dannie@hahn.name" },
+          { email: "dannie@hahn.name" },
+          { email: "danna@cummings.info" },
+          { email: "marybeth@kertzmann-bailey.org" },
+          { email: "mariann@williamson.org" },
+          { email: "marissa@hartmann.com" },
         ])
 
         expect(model.all.length).to eq(5)
 
-        users = model.match(email: "dan").sort()
+        users = model.match(email: "dan")
 
-        expect(users.length).to eq(2)
-        expect(users.first.email).to eq("danna@cummings.info")
-        expect(users.second.email).to eq("dannie@hahn.name")
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(2)
+        expect(sorted_users.first.email).to eq("danna@cummings.info")
+        expect(sorted_users.second.email).to eq("dannie@hahn.name")
       end
 
       it "returns records when using a combination of raw sql query and match query" do
         model.insert_all([
-           { full_name: "Danna Cummings", email: "danna@cummings.info" },
-           { full_name: "Mary Bailey", email: "marybeth@kertzmann-bailey.org" },
-           { full_name: "Mariann Williamson", email: "mariann@williamson.org" },
-           { full_name: "Marissa Hartman", email: "marissa@hartmann.com" },
-           { full_name: "Dannie Hahn", email: "dannie@hahn.name" },
-           { full_name: "Greta Gerwig", email: "greta@gerwig.com" },
+          { full_name: "Mary Bailey", email: "marybeth@kertzmann-bailey.org" },
+          { full_name: "Mariann Williamson", email: "mariann@williamson.org" },
+          { full_name: "Marissa Hartman", email: "marissa@hartmann.com" },
+          { full_name: "Dannie Hahn", email: "dannie@hahn.name" },
+          { full_name: "Greta Gerwig", email: "greta@gerwig.com" },
+          { full_name: "Danna Cummings", email: "danna@cummings.info" },
         ])
         q = "Greta"
         criteria = "%#{q.downcase}%"
@@ -606,12 +608,13 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
           (lower(full_name) like ?)
         SQL
 
-        users = model.where(query, criteria).or(model.match(email: "dan")).sort()
+        users = model.where(query, criteria).or(model.match(email: "dan"))
+        sorted_users = users.sort_by { |u| u.email}
 
-        expect(users.length).to eq(3)
-        expect(users.first.email).to eq("danna@cummings.info")
-        expect(users.second.email).to eq("dannie@hahn.name")
-        expect(users.last.email).to eq("greta@gerwig.com")
+        expect(sorted_users.length).to eq(3)
+        expect(sorted_users.first.email).to eq("danna@cummings.info")
+        expect(sorted_users.second.email).to eq("dannie@hahn.name")
+        expect(sorted_users.last.email).to eq("greta@gerwig.com")
       end
     end
   end
