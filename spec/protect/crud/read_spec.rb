@@ -550,6 +550,26 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
       end
     }
 
+    let(:model_multiple_field_search) {
+       Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+
+        secure_search :email
+        secure_text_search :email,
+          filter_size: 1024, filter_term_bits: 6,
+          bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998817",
+          tokenizer: { kind: :standard },
+          token_filters: [{kind: :downcase}, {kind: :ngram, min_length: 3, max_length: 8}]
+
+        secure_search :suburb
+        secure_text_search :suburb,
+          filter_size: 1024, filter_term_bits: 6,
+          bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998817",
+          tokenizer: { kind: :standard },
+          token_filters: [{kind: :downcase}, {kind: :ngram, min_length: 3, max_length: 8}]
+      end
+    }
+
     context "when using a match query" do
       it "raises an error if no query arg is passed" do
         expect {
@@ -615,6 +635,43 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
         expect(sorted_users.first.email).to eq("danna@cummings.info")
         expect(sorted_users.second.email).to eq("dannie@hahn.name")
         expect(sorted_users.last.email).to eq("greta@gerwig.com")
+      end
+
+      it "returns records using a match query on multiple fields with or" do
+        model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+
+        users = model_multiple_field_search.match(suburb: "Syd").or(model_multiple_field_search.match(email: "mary"))
+
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(2)
+        expect(sorted_users.first.email).to eq("marissa@hartmann.com")
+        expect(sorted_users.second.email).to eq("marybeth@kertzmann-bailey.org")
+      end
+
+      it "returns records using a match query on multiple fields with and" do
+        model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+
+        users = model_multiple_field_search.match(suburb: "Syd").and(model_multiple_field_search.match(email: "mary"))
+
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(1)
+        expect(sorted_users.first.email).to eq("marybeth@kertzmann-bailey.org")
       end
     end
   end
