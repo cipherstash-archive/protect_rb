@@ -582,7 +582,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
 
           expect {
             model.match(email: type)
-          }.to raise_error(CipherStash::Protect::Error, "Value passed to match query must be of type String. Got #{type.inspect()}.")
+          }.to raise_error(CipherStash::Protect::Error, "Value passed to match query for field email must be of type String. Got #{type.inspect()}.")
         end
       end
 
