@@ -1,5 +1,5 @@
 RSpec.describe CipherStash::Protect::Model::CRUD do
-  describe "Read" do
+  describe "Read secure_search" do
     before(:each) do
       CrudTesting.create!([
         {
@@ -527,6 +527,184 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
 
         expect(users.length).to eq(3)
         expect(users.first.age).to eq(72)
+      end
+    end
+  end
+
+  describe "Read secure_text_search" do
+    let(:model) {
+      Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+        secure_search :email
+        secure_text_search :email,
+          filter_size: 1024, filter_term_bits: 6,
+          bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998817",
+          tokenizer: { kind: :standard },
+          token_filters: [{kind: :downcase}, {kind: :ngram, min_length: 3, max_length: 8}]
+      end
+    }
+
+    let(:model_without_secure_text_search) {
+      Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+      end
+    }
+
+    let(:model_multiple_field_search) {
+       Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+
+        secure_search :email
+        secure_text_search :email,
+          filter_size: 1024, filter_term_bits: 6,
+          bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998817",
+          tokenizer: { kind: :standard },
+          token_filters: [{kind: :downcase}, {kind: :ngram, min_length: 3, max_length: 8}]
+
+        secure_search :suburb
+        secure_text_search :suburb,
+          filter_size: 1024, filter_term_bits: 6,
+          bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998817",
+          tokenizer: { kind: :standard },
+          token_filters: [{kind: :downcase}, {kind: :ngram, min_length: 3, max_length: 8}]
+      end
+    }
+
+    context "when using a match query" do
+      it "raises an error if no query arg is passed" do
+        expect {
+          model.match()
+        }.to raise_error(CipherStash::Protect::Error, "Unable to execute text match query. Incorrect args passed. Example usage: model.match(email: 'test')")
+      end
+
+      [nil, 2, Object.new(), {foo: "bar"}, 2.3, []].each do |type|
+        it "raises an error if type #{type.inspect} is passed" do
+
+          expect {
+            model.match(email: type)
+          }.to raise_error(CipherStash::Protect::Error, "Value passed to match query must be of type String. Got #{type.inspect()}.")
+        end
+      end
+
+      it "raises error if a match query is made on an attribute that isn't a searchable text attribute" do
+        expect {
+          model_without_secure_text_search.match(full_name: "John")
+        }.to raise_error(CipherStash::Protect::Error, "Unable to execute text match query. Attribute: full_name does not have a secure_text_search column.")
+      end
+
+      it "returns records when using partial string as value" do
+        model.insert_all([
+          { email: "dannie@hahn.name" },
+          { email: "danna@cummings.info" },
+          { email: "marybeth@kertzmann-bailey.org" },
+          { email: "mariann@williamson.org" },
+          { email: "marissa@hartmann.com" },
+        ])
+
+        expect(model.all.length).to eq(5)
+
+        users = model.match(email: "dan")
+
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(2)
+        expect(sorted_users.first.email).to eq("danna@cummings.info")
+        expect(sorted_users.second.email).to eq("dannie@hahn.name")
+      end
+
+      it "returns records when using a combination of raw sql query and match query" do
+        model.insert_all([
+          { full_name: "Mary Bailey", email: "marybeth@kertzmann-bailey.org" },
+          { full_name: "Mariann Williamson", email: "mariann@williamson.org" },
+          { full_name: "Marissa Hartman", email: "marissa@hartmann.com" },
+          { full_name: "Dannie Hahn", email: "dannie@hahn.name" },
+          { full_name: "Greta Gerwig", email: "greta@gerwig.com" },
+          { full_name: "Danna Cummings", email: "danna@cummings.info" },
+        ])
+        q = "Greta"
+        criteria = "%#{q.downcase}%"
+
+        query = <<~SQL.squish
+          (lower(full_name) like ?)
+        SQL
+
+        users = model.where(query, criteria).or(model.match(email: "dan"))
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(3)
+        expect(sorted_users.first.email).to eq("danna@cummings.info")
+        expect(sorted_users.second.email).to eq("dannie@hahn.name")
+        expect(sorted_users.last.email).to eq("greta@gerwig.com")
+      end
+
+      it "returns records using a match query with multiple args" do
+         model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+        users = model_multiple_field_search.match(email: "mary", suburb: "syd")
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(1)
+        expect(sorted_users.first.email).to eq("marybeth@kertzmann-bailey.org")
+      end
+
+      it "returns records using a match query with multiple args chained to an or query" do
+        model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+        users = model_multiple_field_search.match(email: "mary", suburb: "syd").or(model_multiple_field_search.match(email: "dann", suburb: "strat"))
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(2)
+        expect(sorted_users.first.email).to eq("danna@cummings.info")
+        expect(sorted_users.second.email).to eq("marybeth@kertzmann-bailey.org")
+      end
+
+      it "returns records using a match query on multiple fields with or" do
+        model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+
+        users = model_multiple_field_search.match(suburb: "Syd").or(model_multiple_field_search.match(email: "mary"))
+
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(2)
+        expect(sorted_users.first.email).to eq("marissa@hartmann.com")
+        expect(sorted_users.second.email).to eq("marybeth@kertzmann-bailey.org")
+      end
+
+      it "returns records using a match query on multiple fields with and" do
+        model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+
+        users = model_multiple_field_search.match(suburb: "Syd").and(model_multiple_field_search.match(email: "mary"))
+
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(1)
+        expect(sorted_users.first.email).to eq("marybeth@kertzmann-bailey.org")
       end
     end
   end

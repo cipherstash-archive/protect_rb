@@ -1,6 +1,7 @@
 RSpec.describe CipherStash::Protect::Model::DSL do
   describe "class_methods" do
     context "secure_search" do
+      let(:valid_bloom_filter_id) { "4f108250-53f8-013b-0bb5-0e015c998818" }
       let(:model) {
         Class.new(ActiveRecord::Base) do
           self.table_name = DslTesting.table_name
@@ -32,7 +33,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
           :full_name,
           filter_size: 256,
           filter_term_bits: 3,
-          bloom_filter_id: VALID_BLOOM_FILTER_ID,
+          bloom_filter_id: valid_bloom_filter_id,
           tokenizer: { kind: :standard },
           token_filters: [
             {kind: :downcase}
@@ -83,8 +84,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
     end
 
     context "secure_text_search" do
-      VALID_BLOOM_FILTER_ID = "4f108250-53f8-013b-0bb5-0e015c998818"
-
+      let(:valid_bloom_filter_id) { "4f108250-53f8-013b-0bb5-0e015c998818" }
       let(:model) {
         Class.new(ActiveRecord::Base) do
           self.table_name = DslTesting.table_name
@@ -95,17 +95,15 @@ RSpec.describe CipherStash::Protect::Model::DSL do
         Class.new(ActiveRecord::Base) do
           self.table_name = DslTesting.table_name
 
-          secure_text_search(
-            :full_name,
+          secure_text_search :full_name,
             filter_size: 256,
             filter_term_bits: 3,
-            bloom_filter_id: VALID_BLOOM_FILTER_ID,
+            bloom_filter_id: "4f108250-53f8-013b-0bb5-0e015c998818",
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
               {kind: :ngram, token_length: 3}
             ]
-          )
         end
       }
 
@@ -291,7 +289,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             :full_name,
             filter_size: 256,
             filter_term_bits: 3,
-            bloom_filter_id: VALID_BLOOM_FILTER_ID,
+            bloom_filter_id: valid_bloom_filter_id,
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase},
@@ -307,7 +305,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
             :full_name,
             filter_size: 256,
             filter_term_bits: 3,
-            bloom_filter_id: VALID_BLOOM_FILTER_ID,
+            bloom_filter_id: valid_bloom_filter_id,
             tokenizer: { kind: :standard },
             token_filters: [
               {kind: :downcase}
@@ -321,7 +319,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
           :full_name,
           filter_size: 256,
           filter_term_bits: 3,
-          bloom_filter_id: VALID_BLOOM_FILTER_ID,
+          bloom_filter_id: valid_bloom_filter_id,
           tokenizer: { kind: :standard },
           token_filters: [
             {kind: :downcase}
@@ -334,7 +332,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
           :full_name_secure_text_search=>{
             :filter_size=>256,
             :filter_term_bits=>3,
-            :bloom_filter_id=>VALID_BLOOM_FILTER_ID,
+            :bloom_filter_id=>valid_bloom_filter_id,
             :tokenizer=>{:kind=>:standard},
             :token_filters=>[
               {:kind=>:downcase}
@@ -349,7 +347,7 @@ RSpec.describe CipherStash::Protect::Model::DSL do
           :full_name,
           filter_size: 256,
           filter_term_bits: 3,
-          bloom_filter_id: VALID_BLOOM_FILTER_ID,
+          bloom_filter_id: valid_bloom_filter_id,
           tokenizer: { kind: :standard },
           token_filters: [
             {kind: :downcase}
