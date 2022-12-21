@@ -586,7 +586,7 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
         end
       end
 
-      it "raises error if a match query is made on an attribute that isn't a searchabl text attribute" do
+      it "raises error if a match query is made on an attribute that isn't a searchable text attribute" do
         expect {
           model_without_secure_text_search.match(full_name: "John")
         }.to raise_error(CipherStash::Protect::Error, "Unable to execute text match query. Attribute: full_name does not have a secure_text_search column.")
@@ -635,6 +635,39 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
         expect(sorted_users.first.email).to eq("danna@cummings.info")
         expect(sorted_users.second.email).to eq("dannie@hahn.name")
         expect(sorted_users.last.email).to eq("greta@gerwig.com")
+      end
+
+      it "returns records using a match query with multiple args" do
+         model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+        users = model_multiple_field_search.match(email: "mary", suburb: "syd")
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(1)
+        expect(sorted_users.first.email).to eq("marybeth@kertzmann-bailey.org")
+      end
+
+      it "returns records using a match query with multiple args chained to an or query" do
+        model_multiple_field_search.insert_all([
+          { suburb: "Sydney", email: "marybeth@kertzmann-bailey.org" },
+          { suburb: "Blaxland", email: "mariann@williamson.org" },
+          { suburb: "Sydney", email: "marissa@hartmann.com" },
+          { suburb: "Nowra", email: "dannie@hahn.name" },
+          { suburb: "Parramatta", email: "greta@gerwig.com" },
+          { suburb: "Strathfield", email: "danna@cummings.info" },
+        ])
+        users = model_multiple_field_search.match(email: "mary", suburb: "syd").or(model_multiple_field_search.match(email: "dann", suburb: "strat"))
+        sorted_users = users.sort_by { |u| u.email}
+
+        expect(sorted_users.length).to eq(2)
+        expect(sorted_users.first.email).to eq("danna@cummings.info")
+        expect(sorted_users.second.email).to eq("marybeth@kertzmann-bailey.org")
       end
 
       it "returns records using a match query on multiple fields with or" do
