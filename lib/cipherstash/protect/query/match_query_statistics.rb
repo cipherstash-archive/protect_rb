@@ -30,6 +30,10 @@ module CipherStash
         # The precision statistic shows us how many of the total retrieved documents are relevant.
         # The recall statistic shows us how many of the total relevant documents have been retrieved.
         #
+        # To test out different filter option settings, update the values in the filter_size and filter_term_bits
+        # keys in your selected model, then re encrypt your data by running the rake task
+        # rake protect:encrypt\[Model\] and run the statistics again.
+        #
         # @param model [Class] The relevant model to apply the query to.
         #
         # @param field [Symbol] The secure_text_search field to query.

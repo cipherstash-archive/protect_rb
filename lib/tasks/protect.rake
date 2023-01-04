@@ -41,14 +41,20 @@ namespace :protect do
     stats = CipherStash::Protect::Query::MatchQueryStatistics.new(**args.to_hash).run
 
     info = <<~EOF
-      The precision recall stats for model #{args[:model].class.name} on field #{args[:field]}
+      The precision recall stats for model #{args[:model].constantize} on field #{args[:field]}
 
       using query_string #{args[:query_string]}:
 
       precision = #{stats[:precision]}%
       recall = #{stats[:recall]}%
+
+      The precision statistic indicates how many of the total retrieved documents are relevant.
+
+      The recall statistic indicates how many of the total relevant documents have been retrieved.
     EOF
 
-    info.split("\n").each {|line| CipherStash::Protect::Logger.info(line) }
+    logger = Logger.new(STDOUT, level: :info)
+
+    info.split("\n").each {|line| logger.info(line) }
   end
 end
