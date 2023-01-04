@@ -35,4 +35,20 @@ namespace :protect do
 
     info.split("\n").each {|line| CipherStash::Protect::Logger.info(line) }
   end
+
+  desc "Generate match query stats to help determine what filter settings to use"
+  task :match_query_stats, [:model, :field, :query_string] => :environment do |_task, args|
+    stats = CipherStash::Protect::Query::MatchQueryStatistics.new(**args.to_hash).run
+
+    info = <<~EOF
+      The precision recall stats for model #{args[:model].class.name} on field #{args[:field]}
+
+      using query_string #{args[:query_string]}:
+
+      precision = #{stats[:precision]}%
+      recall = #{stats[:recall]}%
+    EOF
+
+    info.split("\n").each {|line| CipherStash::Protect::Logger.info(line) }
+  end
 end
