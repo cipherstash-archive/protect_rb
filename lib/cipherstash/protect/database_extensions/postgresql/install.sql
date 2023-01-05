@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TYPE ore_64_8_v1 AS (
-  bytes bytea[]
+  bytes bytea
 );
 
 CREATE OR REPLACE FUNCTION compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1) returns integer AS $$
@@ -17,6 +17,9 @@ CREATE OR REPLACE FUNCTION compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1) ret
 
     indicator smallint := 0;
   BEGIN
+    RAISE NOTICE '############'
+    RAISE NOTICE 'a: % ', a;
+    RAISE NOTICE 'b: % ', b;
     IF a IS NULL AND b IS NULL THEN
       RETURN 0;
     END IF;

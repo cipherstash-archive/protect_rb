@@ -9,7 +9,7 @@ module CipherStash
         end
 
         def cast(value)
-          binding.pry
+          # binding.pry
           if !value.nil?
             ORE_64_8_V1.encrypt(value)
           else
@@ -27,12 +27,18 @@ module CipherStash
         end
 
         def serialize(value)
-          binding.pry
+          # binding.pry
           if !value.nil?
             # value will be an array of
-            bytes = value.ciphertext.to_s.bytes
-
-            "(\"\\\\x#{bytes.pack("C*").unpack("H*").first}\")"
+            # bytes = value.ciphertext.to_s.bytes
+            terms =
+              value.map do |v|
+                binding.pry
+              bytes = v.ciphertext.to_s.bytes
+              "(\"\\\\x#{bytes.pack("C*").unpack("H*").first}\")"
+            end
+            # binding.pry
+            "{#{terms.join(",")}}"
           else
             nil
           end
@@ -57,6 +63,7 @@ module CipherStash
               else
                 [term]
               end
+            binding.pry
             terms.map { |t| new(ore.encrypt(t)) }
           end
         end
