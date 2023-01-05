@@ -709,3 +709,27 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
     end
   end
 end
+
+RSpec.describe "orderable strings" do
+  let(:model) {
+      Class.new(ActiveRecord::Base) do
+        self.table_name = CrudTesting.table_name
+        secure_search :email
+      end
+    }
+  describe "orderable strings" do
+    it "returns records using order asc" do
+      model.create({ email: "marybeth@kertzmann-bailey.org" })
+      model.create({ email: "mariann@williamson.org" })
+      model.create({ email: "marissa@hartmann.com" })
+      model.create({ email: "dannie@hahn.name" })
+      model.create({ email: "greta@gerwig.com" })
+      model.create({ email: "danna@cummings.info" })
+
+      user_via_string = model.order(email: :asc).first
+
+      expect(user_via_string).to_not be(nil)
+      expect(user_via_string.email).to eq("danna@cummings.info")
+    end
+  end
+end
