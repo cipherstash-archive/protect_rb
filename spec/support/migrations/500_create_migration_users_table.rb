@@ -4,7 +4,7 @@ class CreateMigrationUsersTable < ActiveRecord::Migration[RAILS_VERSION]
       t.text :email
       t.text :email_ciphertext
 
-      t.column :email_secure_search, :ore_64_8_v1
+      t.column :email_secure_search, :ore_64_8_v1, array: true
     end
   end
 end

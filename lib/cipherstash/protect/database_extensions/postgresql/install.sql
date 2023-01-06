@@ -1,8 +1,22 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+-- CREATE TYPE test AS (
+--   bytes bytea
+-- )
+
+-- CREATE TYPE ore_64_8_v2 AS (
+--   ct test[]
+-- );
 CREATE TYPE ore_64_8_v1 AS (
   bytes bytea
 );
+
+-- CREATE TYPE ore_block_64_8_v1 AS (
+--   ct ore_64_8_v1[]
+-- )
+
+-- check if 2 arrays are equal in length
+--
 
 CREATE OR REPLACE FUNCTION compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1) returns integer AS $$
   DECLARE
@@ -17,9 +31,9 @@ CREATE OR REPLACE FUNCTION compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1) ret
 
     indicator smallint := 0;
   BEGIN
-    RAISE NOTICE '############'
-    RAISE NOTICE 'a: % ', a;
-    RAISE NOTICE 'b: % ', b;
+    -- RAISE NOTICE '############'
+    -- RAISE NOTICE '%', a;
+    -- RAISE NOTICE '%', b;
     IF a IS NULL AND b IS NULL THEN
       RETURN 0;
     END IF;
@@ -34,7 +48,7 @@ CREATE OR REPLACE FUNCTION compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1) ret
 
     -- bytes is now an array of binary strings
     -- check length of array
-    -- check bit_length of each binary string within the array
+    check bit_length of each binary string within the array
     IF bit_length(a.bytes) != bit_length(b.bytes) THEN
       RAISE EXCEPTION 'Ciphertexts are different lengths';
     END IF;

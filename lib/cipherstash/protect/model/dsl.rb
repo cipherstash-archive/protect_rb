@@ -29,9 +29,9 @@ module CipherStash
               end
             end
 
-            if !ore_64_8_v1?(column_name)
-              raise CipherStash::Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
-            end
+            # if !ore_64_8_v1?(column_name)
+            #   raise CipherStash::Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
+            # end
 
             # Check if secure_text_search has already been called before calling Lockbox has_encrypted
             # and updating protect_search_attrs with attribute

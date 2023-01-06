@@ -33,7 +33,7 @@ module CipherStash
             # bytes = value.ciphertext.to_s.bytes
             terms =
               value.map do |v|
-                binding.pry
+                # binding.pry
               bytes = v.ciphertext.to_s.bytes
               "(\"\\\\x#{bytes.pack("C*").unpack("H*").first}\")"
             end
@@ -63,7 +63,7 @@ module CipherStash
               else
                 [term]
               end
-            binding.pry
+            # binding.pry
             terms.map { |t| new(ore.encrypt(t)) }
           end
         end
@@ -101,11 +101,11 @@ module CipherStash
         # NOTE: This is a copy of the implementation from the Ruby Client.
         #
         # The comments on this method are really comprehensive,
-        # and pretty awesome, so they are a direct copy/paste from the original method.
+        # so they are a direct copy/paste from the original method.
         #
         # https://github.com/cipherstash/ruby-client/blob/main/lib/cipherstash/index/range.rb#L75
-        def self.orderise_string(s)
-          unless s.clone.force_encoding("US-ASCII").valid_encoding?
+        def self.orderise_string(str)
+          unless str.clone.force_encoding("US-ASCII").valid_encoding?
               raise Client::Error::InvalidRecordError, "Can only order strings that are pure ASCII"
           end
 
@@ -116,7 +116,7 @@ module CipherStash
           # First up, let's transmogrify the string we were given into one that only contains
           # a controlled subset of characters, that we can easily map into a smaller numeric
           # space.
-          s = s
+          str = str
             # We care not for your capitals!
             .downcase
             # Any group of rando characters sort at the end
@@ -126,30 +126,35 @@ module CipherStash
             # Numbers come after spaces
             .gsub(/[0-9]/, '|')
 
+          # eg "marybeth@kertzmann-bailey.org" => "marybeth~kertzmann~bailey~org"
+
           # Next, we turn that string of characters into a "packed" number that represents the
           # whole string, but in a more compact form than would be used if each character took
           # up the full seven or eight bits used by regular ASCII.
-          n = s
+          num = str
             .each_char
             # 'a' => 1, 'b' => 2, ..., 'z' => 27, '{' => 28, '|' => 29,
             # '}' => 30 (unused), '~' => 31.  0 is kept as "no character" so
             # that short strings sort before longer ones.
+            # turns each char into a codepoint starting from 1 for a etc.
+            #  eg[13,1,18,25,2,5,20,8,30,11,5,18,20,26,13,1,14,14,30,2,1,9,12,5,25,30,15,18,7]
             .map { |c| c.ord - 96 }
             # Turn the whole thing into one giant number, with each character
             # occupying five bits of said number.
+            # eg 18188478222059287869564498627200381756587591
             .inject(0) { |i, c| (i << 5) + c }
 
           # Thirdly, we need to turn the number into one whose in-memory representation
           # has a length in bits that is a multiple of 64.  This is to ensure that
           # the first character has the most-significant bits possible, so it
           # sorts the highest.
-          n = n << (64 - (s.length * 5) % 64)
+          num = num << (64 - (str.length * 5) % 64)
 
           # And now, semi-finally, we can turn all that gigantic mess into an array of terms
           [].tap do |terms|
-            while n > 0
-              terms.unshift(n % 2**64)
-              n >>= 64
+            while num > 0
+              terms.unshift(num % 2**64)
+              num >>= 64
             end
           # Only six ORE ciphertexts can fit into the database
           end[0, 6]
