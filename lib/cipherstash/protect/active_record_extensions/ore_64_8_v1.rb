@@ -9,7 +9,7 @@ module CipherStash
         end
 
         def cast(value)
-          # binding.pry
+          binding.pry
           if !value.nil?
             ORE_64_8_V1.encrypt(value)
           else
@@ -37,8 +37,8 @@ module CipherStash
               bytes = v.ciphertext.to_s.bytes
               "(\"\\\\x#{bytes.pack("C*").unpack("H*").first}\")"
             end
-            # binding.pry
-            "{#{terms.join(",")}}"
+            binding.pry
+            "{#{terms.join(",")}}".tap { |t| p t}
           else
             nil
           end

@@ -94,6 +94,7 @@ module CipherStash
         end
 
         def _create_record(*)
+          puts "hitting create"
           protect_sync
           super
         end
@@ -105,13 +106,13 @@ module CipherStash
 
         def protect_sync
           search_attrs = self.class.protect_search_attrs
-
+          # binding.pry
           if search_attrs.kind_of?(Hash) && !search_attrs.empty?
             search_attrs.each do |virt_attr, metadata|
               searchable_attr = metadata[:searchable_attribute]
               searchable_text_attr = metadata[:searchable_text_attribute]&.keys&.first
-              # binding.pry
               if searchable_attr
+                binding.pry
                 self.send("#{searchable_attr}=", self.send(virt_attr))
               end
 

@@ -719,8 +719,8 @@ RSpec.describe "orderable strings" do
     }
   describe "orderable strings" do
     it "returns records using order asc" do
-      model.create({ email: "marybeth@kertzmann-bailey.org" })
       model.create({ email: "mariann@williamson.org" })
+      model.create({ email: "marybeth@kertzmann-bailey.org" })
       model.create({ email: "marissa@hartmann.com" })
       model.create({ email: "dannie@hahn.name" })
       model.create({ email: "greta@gerwig.com" })
