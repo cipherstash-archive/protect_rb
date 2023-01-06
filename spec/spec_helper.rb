@@ -26,6 +26,8 @@ def establish_connection(**attrs)
 end
 
 RSpec.configure do |config|
+  ActiveRecord::Base.logger = Logger.new(STDOUT)
+
   config.full_backtrace = ENV.key?("RSPEC_FULL_BACKTRACE")
   config.run_all_when_everything_filtered = true
 
@@ -59,6 +61,7 @@ RSpec.configure do |config|
     /\/lib\/rspec\/(core|expectations|matchers|mocks)/,
     /\/vendor\/bundler/,
   ]
+
 
   # Everything in spec/protect/ is a :type => :db spec unless marked
   # otherwise, eg.

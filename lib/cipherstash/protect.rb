@@ -75,6 +75,13 @@ if defined?(ActiveSupport.on_load)
       adapter: :postgresql
     )
 
+    ActiveRecord::Type.register(
+      "ore_64_8_v1_text",
+      CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1_Text_Type,
+      override: true,
+      adapter: :postgresql
+    )
+
     ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend(
       CipherStash::Protect::DatabaseExtensions::Postgresql::ConnectionAdapter
     )

@@ -168,3 +168,128 @@ CREATE OPERATOR CLASS ore_64_8_v1_btree_ops DEFAULT FOR TYPE ore_64_8_v1 USING b
         OPERATOR 4 >=,
         OPERATOR 5 >,
         FUNCTION 1 compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1);
+
+
+CREATE TYPE ore_64_8_v1_text AS (
+  terms ore_64_8_v1[]
+);
+
+CREATE OR REPLACE FUNCTION compare_ore_64_8_v1_text(a ore_64_8_v1_text, b ore_64_8_v1_text) returns integer AS $$
+  DECLARE
+    cmp_result integer;
+
+  BEGIN
+    IF array_length(a.terms) < array_length(b.terms) THEN
+      return -1;
+    END IF;
+
+    IF array_length(a.terms) > array_length(b.terms) THEN
+      return 1;
+    END IF;
+
+    FOR e IN 0..array_length(a.terms) LOOP
+      cmp_result := compare_ore_64_8_v1(a.terms[e], b.terms[e]);
+
+      IF cmp_result != 0 THEN
+        return cmp_result;
+      END IF;
+    END LOOP;
+
+    return 0;
+  END
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION ore_64_8_v1_text_eq(a ore_64_8_v1_text, b ore_64_8_v1_text) RETURNS boolean AS $$
+  SELECT compare_ore_64_8_v1_text(a, b) = 0
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION ore_64_8_v1_text_neq(a ore_64_8_v1_text, b ore_64_8_v1_text) RETURNS boolean AS $$
+  SELECT compare_ore_64_8_v1_text(a, b) <> 0
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION ore_64_8_v1_text_lt(a ore_64_8_v1_text, b ore_64_8_v1_text) RETURNS boolean AS $$
+  SELECT compare_ore_64_8_v1_text(a, b) = -1
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION ore_64_8_v1_text_lte(a ore_64_8_v1_text, b ore_64_8_v1_text) RETURNS boolean AS $$
+  SELECT compare_ore_64_8_v1_text(a, b) != 1
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION ore_64_8_v1_text_gt(a ore_64_8_v1_text, b ore_64_8_v1_text) RETURNS boolean AS $$
+  SELECT compare_ore_64_8_v1_text(a, b) = 1
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION ore_64_8_v1_text_gte(a ore_64_8_v1_text, b ore_64_8_v1_text) RETURNS boolean AS $$
+  SELECT compare_ore_64_8_v1_text(a, b) != -1
+$$ LANGUAGE SQL;
+
+CREATE OPERATOR = (
+  PROCEDURE="ore_64_8_v1_text_eq",
+  LEFTARG=ore_64_8_v1_text,
+  RIGHTARG=ore_64_8_v1_text,
+  NEGATOR = <>,
+  RESTRICT = eqsel,
+  JOIN = eqjoinsel,
+  HASHES,
+  MERGES
+);
+
+CREATE OPERATOR <> (
+  PROCEDURE="ore_64_8_v1_text_neq",
+  LEFTARG=ore_64_8_v1_text,
+  RIGHTARG=ore_64_8_v1_text,
+  NEGATOR = =,
+  RESTRICT = eqsel,
+  JOIN = eqjoinsel,
+  HASHES,
+  MERGES
+);
+
+CREATE OPERATOR > (
+  PROCEDURE="ore_64_8_v1_text_gt",
+  LEFTARG=ore_64_8_v1_text,
+  RIGHTARG=ore_64_8_v1_text,
+  COMMUTATOR = <,
+  NEGATOR = <=,
+  RESTRICT = scalargtsel,
+  JOIN = scalargtjoinsel
+);
+
+CREATE OPERATOR < (
+  PROCEDURE="ore_64_8_v1_text_lt",
+  LEFTARG=ore_64_8_v1_text,
+  RIGHTARG=ore_64_8_v1_text,
+  COMMUTATOR = >,
+  NEGATOR = >=,
+  RESTRICT = scalarltsel,
+  JOIN = scalarltjoinsel
+);
+
+CREATE OPERATOR <= (
+  PROCEDURE="ore_64_8_v1_text_lte",
+  LEFTARG=ore_64_8_v1_text,
+  RIGHTARG=ore_64_8_v1_text,
+  COMMUTATOR = >=,
+  NEGATOR = >,
+  RESTRICT = scalarlesel,
+  JOIN = scalarlejoinsel
+);
+
+CREATE OPERATOR >= (
+  PROCEDURE="ore_64_8_v1_text_gte",
+  LEFTARG=ore_64_8_v1_text,
+  RIGHTARG=ore_64_8_v1_text,
+  COMMUTATOR = <=,
+  NEGATOR = <,
+  RESTRICT = scalarlesel,
+  JOIN = scalarlejoinsel
+);
+
+CREATE OPERATOR FAMILY ore_64_8_v1_text_btree_ops USING btree;
+CREATE OPERATOR CLASS ore_64_8_v1_text_btree_ops DEFAULT FOR TYPE ore_64_8_v1_text USING btree FAMILY ore_64_8_v1_text_btree_ops  AS
+        OPERATOR 1 <,
+        OPERATOR 2 <=,
+        OPERATOR 3 =,
+        OPERATOR 4 >=,
+        OPERATOR 5 >,
+        FUNCTION 1 compare_ore_64_8_v1_text(a ore_64_8_v1_text, b ore_64_8_v1_text);
