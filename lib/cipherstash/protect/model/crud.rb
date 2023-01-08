@@ -112,7 +112,7 @@ module CipherStash
               searchable_attr = metadata[:searchable_attribute]
               searchable_text_attr = metadata[:searchable_text_attribute]&.keys&.first
               if searchable_attr
-                binding.pry
+                # binding.pry
                 self.send("#{searchable_attr}=", self.send(virt_attr))
               end
 

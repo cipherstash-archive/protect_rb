@@ -107,8 +107,8 @@ module CipherStash
           private
 
           def ore_64_8_v1?(column_name)
-            # binding.pry
-            columns_hash[column_name.to_s].sql_type_metadata.sql_type.to_sym == :"ore_64_8_v1[]"
+            binding.pry
+            columns_hash[column_name.to_s].sql_type_metadata.sql_type.to_sym == :ore_64_8_v1
           end
 
           def bloom_filter_db_type?(column_name)

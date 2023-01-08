@@ -8,10 +8,10 @@ class CreatePlaintextUsersTable < ActiveRecord::Migration[RAILS_VERSION]
       t.text :verified_ciphertext
       t.text :latitude_ciphertext
 
-      t.column :dob_secure_search, :ore_64_8_v1, array: true
-      t.column :last_login_secure_search, :ore_64_8_v1, array: true
-      t.column :verified_secure_search, :ore_64_8_v1, array: true
-      t.column :latitude_secure_search, :ore_64_8_v1, array: true
+      t.column :dob_secure_search, :ore_64_8_v1
+      t.column :last_login_secure_search, :ore_64_8_v1
+      t.column :verified_secure_search, :ore_64_8_v1
+      t.column :latitude_secure_search, :ore_64_8_v1
     end
   end
 end
