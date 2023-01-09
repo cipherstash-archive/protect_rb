@@ -44,7 +44,7 @@ module CipherStash
                 # bytes.pack("C*")
                 # binding.pry
               end
-              binding.pry
+              # binding.pry
               # PG::TextEncoder::Array.new.encode(terms)
             # PG::TextEncoder::Record.new.encode(PG::TextEncoder::Array.new.encode(terms))
             # "{'#{terms.join(",")}'}"

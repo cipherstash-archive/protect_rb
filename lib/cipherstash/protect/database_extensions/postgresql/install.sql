@@ -177,17 +177,19 @@ CREATE TYPE ore_64_8_v1_text AS (
 CREATE OR REPLACE FUNCTION compare_ore_64_8_v1_text(a ore_64_8_v1_text, b ore_64_8_v1_text) returns integer AS $$
   DECLARE
     cmp_result integer;
-
   BEGIN
-    IF array_length(a.terms) < array_length(b.terms) THEN
+    raise notice '%', a;
+    -- raise notice 'Value!!!!!!!!!!!: %', a;
+
+    IF array_length(a.terms, 1) < array_length(b.terms, 1) THEN
       return -1;
     END IF;
 
-    IF array_length(a.terms) > array_length(b.terms) THEN
+    IF array_length(a.terms, 1) > array_length(b.terms, 1) THEN
       return 1;
     END IF;
 
-    FOR e IN 0..array_length(a.terms) LOOP
+    FOR e IN 0..array_length(a.terms, 1) LOOP
       cmp_result := compare_ore_64_8_v1(a.terms[e], b.terms[e]);
 
       IF cmp_result != 0 THEN
