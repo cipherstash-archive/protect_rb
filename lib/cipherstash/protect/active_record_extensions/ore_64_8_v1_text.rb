@@ -34,15 +34,23 @@ module CipherStash
                 bytes = term.ciphertext.to_s.bytes
                 # '("\\x1f82fb4c7c674e82a4ade6ecbd
                 # '("\\x1f82fb4c7c674e82a4ade6ecbd22e56ab66ae5381b3fc06a3a4e5a597463f40e728ca96983903fd865eef13f8bd24027efdc8d8d70c51f7141bf2a13aa7f842e0d0c71fdf999a97e66e333deaebd8bffe5e745e8319b3786d6f36b9cc4caa7c96bf0a9e34de9f6abf29399da54a87b21735503f0a0d53e62078c0419fb5aab254fd4f701937ecaf9ce679eb2f898a5a019400272fab7a21e36c7e8eb8c058ef8dbabd925849eb3125cb548bfa42bc81036a1609979cd44b1ee6cac19d36db18d40a56777c6369ddd22187bdbf4cd3258837dd402c255438e492b1de620d571ae22400ba8df5917f11efff97cb87f7344ed242a4b51b65a45f7656719d170f942de52352c74953222ff148afd1ed6e8d66302af9e20b68643b63481dd38a40023a281c79a434f4b5d2c4c779ecd02c9890a084aa3858e9d55d36150ec490df6c6e1f2c7df7da89df666a0df86399dcf38a08e4a6c821db2c0eaecdc1fbac45784b3ba527c91884a5bb69e87ec46a68a50e237408964137ce7325f1ebc0f83b48a0169479496825dcb007271519ab0721dc286535bfec01f4e")'
-                "\\x#{bytes.pack("C*").unpack("H*").first}"
+
+
+                # "\\x#{bytes.pack("C*").unpack("H*").first}"
                 # "\\\\x#{bytes.pack("C*").unpack("H*").first}"
                 # "(\\\\x#{bytes.pack("C*").unpack("H*").first})"
+                # "E'\\\\x#{bytes.pack("C*").unpack("H*").first}'"
+                "(\"\\\\x#{bytes.pack("C*").unpack("H*").first}\")"
                 # bytes.pack("C*")
                 # binding.pry
               end
-              # binding.pry
-            PG::TextEncoder::Array.new.encode(terms)
+              binding.pry
+              # PG::TextEncoder::Array.new.encode(terms)
+            # PG::TextEncoder::Record.new.encode(PG::TextEncoder::Array.new.encode(terms))
             # "{'#{terms.join(",")}'}"
+            # encoded_terms = PG::TextEncoder::Array.new.encode(terms)
+            # "(\"{#{encoded_terms}}\")"
+            "(\"{#{terms.join(",")}}\")"
 
           else
             nil
