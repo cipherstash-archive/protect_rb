@@ -34,9 +34,16 @@ CREATE OR REPLACE FUNCTION compare_ore_64_8_v1(a ore_64_8_v1, b ore_64_8_v1) ret
     END IF;
 
     FOR block IN 0..7 LOOP
-      -- TODO: This isn't complete: need to check the prp values as well as the blocks
-      -- Substr is ordinally indexed (hence 9 and not 8)
-      IF substr(a.bytes, 9 + left_block_size * block, left_block_size) != substr(b.bytes, 9 + left_block_size * BLOCK, left_block_size) THEN
+      -- Compare each PRP (byte from the first 8 bytes) and PRF block (8 byte
+      -- chunks of the rest of the value).
+      -- NOTE:
+      -- * Substr is ordinally indexed (hence 1 and not 0, and 9 and not 8).
+      -- * We are not worrying about timing attacks here; don't fret about
+      --   the OR or !=.
+      IF
+        substr(a.bytes, 1 + block, 1) != substr(b.bytes, 1 + block, 1)
+        OR substr(a.bytes, 9 + left_block_size * block, left_block_size) != substr(b.bytes, 9 + left_block_size * BLOCK, left_block_size)
+      THEN
         -- set the first unequal block we find
         IF eq THEN
           unequal_block := block;
