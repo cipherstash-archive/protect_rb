@@ -15,6 +15,7 @@ module CipherStash
             && !value.is_a?(ActiveRecord::StatementCache::Substitute)
           then
             search_attr = klass.protect_search_attrs[attribute.name.to_sym]&.fetch(:searchable_attribute)
+            binding.pry
 
             if search_attr
               attribute = attribute.relation[search_attr]
@@ -22,7 +23,11 @@ module CipherStash
               if range_query?(value)
                 value = encrypt_range(value)
               else
-                value = ORE_64_8_V1.encrypt(value)
+                if value.instance_of?(String)
+                  value = ORE_64_8_V1_Text.encrypt(value)
+                else
+                  value = ORE_64_8_V1.encrypt(value)
+                end
               end
             end
           end

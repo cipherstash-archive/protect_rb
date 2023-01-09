@@ -8,7 +8,11 @@ module CipherStash
           protect_attr = record.class.protect_search_attrs[attribute.to_sym]
           if protect_attr
             virt_attr_val = record.read_attribute_for_validation(protect_attr[:lockbox_attribute][:attribute])
-            value = CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1.encrypt(virt_attr_val)
+            if virt_attr_val.instance_of?(String)
+              value = CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1_Text.encrypt(virt_attr_val)
+            else
+              value = CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1.encrypt(virt_attr_val)
+            end
           end
           super(record, attribute, value)
         end

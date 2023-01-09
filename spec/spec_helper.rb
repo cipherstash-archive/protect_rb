@@ -26,7 +26,7 @@ def establish_connection(**attrs)
 end
 
 RSpec.configure do |config|
-  ActiveRecord::Base.logger = Logger.new(STDOUT)
+  # ActiveRecord::Base.logger = Logger.new(STDOUT)
 
   config.full_backtrace = ENV.key?("RSPEC_FULL_BACKTRACE")
   config.run_all_when_everything_filtered = true

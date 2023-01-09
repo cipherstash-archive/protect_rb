@@ -7,7 +7,7 @@ class CreateUsersTableForDslTesting < ActiveRecord::Migration[RAILS_VERSION]
       t.text :dob_ciphertext
 
       t.column :dob_secure_search, :ore_64_8_v1
-      t.column :full_name_secure_search, :ore_64_8_v1
+      t.column :full_name_secure_search, :ore_64_8_v1_text
       t.column :full_name_secure_text_search, :integer, limit: 2, array: true
 
       # Used to assert that a custom column name can be used

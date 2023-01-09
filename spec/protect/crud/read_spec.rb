@@ -160,7 +160,9 @@ RSpec.describe CipherStash::Protect::Model::CRUD do
 
       context "when using a string type" do
         it "returns records using where" do
+          # binding.pry
           user_via_string = CrudTesting.where(email: "etheline@tenenbaum.com")
+          binding.pry
 
           expect(user_via_string.length).to eq(1)
           expect(user_via_string.first.email).to eq("etheline@tenenbaum.com")

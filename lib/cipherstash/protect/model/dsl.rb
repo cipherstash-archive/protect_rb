@@ -29,9 +29,13 @@ module CipherStash
               end
             end
 
-            # if !ore_64_8_v1?(column_name)
-            #   raise CipherStash::Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
-            # end
+            if (type == :string || type == :text) && !ore_64_8_v1_text?(column_name)
+              raise CipherStash::Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1_text (in `secure_search :#{attribute}`)"
+            end
+
+            if type != :string && type != :text && !ore_64_8_v1?(column_name)
+              raise CipherStash::Protect::Error, "Column name '#{column_name}' is not of type :ore_64_8_v1 (in `secure_search :#{attribute}`)"
+            end
 
             # Check if secure_text_search has already been called before calling Lockbox has_encrypted
             # and updating protect_search_attrs with attribute
@@ -107,8 +111,11 @@ module CipherStash
           private
 
           def ore_64_8_v1?(column_name)
-            binding.pry
             columns_hash[column_name.to_s].sql_type_metadata.sql_type.to_sym == :ore_64_8_v1
+          end
+
+          def ore_64_8_v1_text?(column_name)
+            columns_hash[column_name.to_s].sql_type_metadata.sql_type.to_sym == :ore_64_8_v1_text
           end
 
           def bloom_filter_db_type?(column_name)

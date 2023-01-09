@@ -37,7 +37,13 @@ module CipherStash
                   secure_text_search_field = protect_search_attrs[virtual_attribute].fetch(:searchable_text_attribute, nil)&.keys&.first
 
                   if secure_search_field
-                    ore_encrypted_value = CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1.encrypt(decrypted_lockbox_value)
+                    ore_encrypted_value = nil
+
+                    if decrypted_lockbox_value.instance_of?(String)
+                      ore_encrypted_value = CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1_Text.encrypt(decrypted_lockbox_value)
+                    else
+                      ore_encrypted_value = CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1.encrypt(decrypted_lockbox_value)
+                    end
                     attributes[secure_search_field] = ore_encrypted_value
                   end
 
@@ -94,7 +100,6 @@ module CipherStash
         end
 
         def _create_record(*)
-          puts "hitting create"
           protect_sync
           super
         end
@@ -106,13 +111,13 @@ module CipherStash
 
         def protect_sync
           search_attrs = self.class.protect_search_attrs
-          # binding.pry
+
           if search_attrs.kind_of?(Hash) && !search_attrs.empty?
             search_attrs.each do |virt_attr, metadata|
               searchable_attr = metadata[:searchable_attribute]
               searchable_text_attr = metadata[:searchable_text_attribute]&.keys&.first
+
               if searchable_attr
-                # binding.pry
                 self.send("#{searchable_attr}=", self.send(virt_attr))
               end
 
