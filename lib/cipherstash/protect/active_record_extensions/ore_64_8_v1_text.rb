@@ -19,9 +19,9 @@ module CipherStash
         end
 
         def deserialize(value)
-          binding.pry
           if !value.nil?
-            value.map do |term|
+            # binding.pry
+            value.split(",").map do |term|
               ORE_64_8_V1.new([term[1..-2]].pack("H*").unpack("C*"))
             end
           else
@@ -60,7 +60,7 @@ module CipherStash
               if term.instance_of?(String)
                 orderise_string(term)
               else
-                term
+                [term]
               end
             # # binding.pry
             terms.map { |t| CipherStash::Protect::ActiveRecordExtensions::ORE_64_8_V1.encrypt(t) }

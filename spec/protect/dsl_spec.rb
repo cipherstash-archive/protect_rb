@@ -10,10 +10,16 @@ RSpec.describe CipherStash::Protect::Model::DSL do
         end
       }
 
-      it "raises an error when a secure_search attribute is not of type :ore_64_8_v1" do
+      it "raises an error when a secure_search attribute of data type string is not of type :ore_64_8_v1_text" do
         expect {
           model.secure_search :email
-        }.to raise_error(CipherStash::Protect::Error,  "Column name 'email_secure_search' is not of type :ore_64_8_v1 (in `secure_search :email`)")
+        }.to raise_error(CipherStash::Protect::Error,  "Column name 'email_secure_search' is not of type :ore_64_8_v1_text (in `secure_search :email`)")
+      end
+
+      it "raises an error when a secure_search attribute of a data type that is not string or text and is not of type :ore_64_8_v1" do
+        expect {
+          model.secure_search :latitude, type: :float
+        }.to raise_error(CipherStash::Protect::Error,  "Column name 'latitude_secure_search' is not of type :ore_64_8_v1 (in `secure_search :latitude`)")
       end
 
       it "raises an error when secure_search has already been specified for an attribute" do

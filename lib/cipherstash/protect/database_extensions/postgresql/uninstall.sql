@@ -1,4 +1,14 @@
 -- TODO: what happens if we try to uninstall a type which is in use?
+DROP OPERATOR IF EXISTS = (ore_64_8_v1_text, ore_64_8_v1_text) CASCADE;
+DROP OPERATOR IF EXISTS <> (ore_64_8_v1_text, ore_64_8_v1_text) CASCADE;
+DROP OPERATOR IF EXISTS > (ore_64_8_v1_text, ore_64_8_v1_text) CASCADE;
+DROP OPERATOR IF EXISTS < (ore_64_8_v1_text, ore_64_8_v1_text) CASCADE;
+DROP OPERATOR IF EXISTS <= (ore_64_8_v1_text, ore_64_8_v1_text) CASCADE;
+DROP OPERATOR IF EXISTS >= (ore_64_8_v1_text, ore_64_8_v1_text) CASCADE;
+DROP OPERATOR CLASS IF EXISTS ore_64_8_v1_text_btree_ops USING btree CASCADE;
+DROP OPERATOR FAMILY IF EXISTS ore_64_8_v1_text_btree_ops USING btree CASCADE;
+DROP TYPE IF EXISTS ore_64_8_v1_text CASCADE;
+
 DROP OPERATOR IF EXISTS = (ore_64_8_v1, ore_64_8_v1) CASCADE;
 DROP OPERATOR IF EXISTS <> (ore_64_8_v1, ore_64_8_v1) CASCADE;
 DROP OPERATOR IF EXISTS > (ore_64_8_v1, ore_64_8_v1) CASCADE;

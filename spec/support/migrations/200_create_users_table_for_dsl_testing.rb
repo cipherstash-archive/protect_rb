@@ -5,6 +5,7 @@ class CreateUsersTableForDslTesting < ActiveRecord::Migration[RAILS_VERSION]
       t.text :full_name_ciphertext
       t.text :bio_ciphertext
       t.text :dob_ciphertext
+      t.text :latitude_ciphertext
 
       t.column :dob_secure_search, :ore_64_8_v1
       t.column :full_name_secure_search, :ore_64_8_v1_text
@@ -18,6 +19,7 @@ class CreateUsersTableForDslTesting < ActiveRecord::Migration[RAILS_VERSION]
       t.column :email_secure_search, :text
       t.column :email_secure_text_search, :text
       t.column :verified_secure_text_search, :boolean
+      t.column :latitude_secure_search, :text
     end
   end
 end
